@@ -1,7 +1,8 @@
 <script setup>
 import { useScroll } from '@vueuse/core'
-
-const { x, y } = useScroll(window)
+import { useCategoryStore } from '@/stores/category'
+const { y } = useScroll(window)
+const categoryStore = useCategoryStore()
 </script>
 
 <template>
@@ -13,39 +14,14 @@ const { x, y } = useScroll(window)
                 <li class="home">
                     <RouterLink to="/">首页</RouterLink>
                 </li>
-                <li>
-                    <RouterLink to="/">居家</RouterLink>
+                <li class="home" v-for="item in categoryStore.categoryList" :key="item.id">
+                    <RouterLink to="/">{{ item.name }}</RouterLink>
                 </li>
-                <li>
-                    <RouterLink to="/">美食</RouterLink>
-                </li>
-                <li>
-                    <RouterLink to="/">服饰</RouterLink>
-                </li>
-                <li>
-                    <RouterLink to="/">母婴</RouterLink>
-                </li>
-                <li>
-                    <RouterLink to="/">个护</RouterLink>
-                </li>
-                <li>
-                    <RouterLink to="/">严选</RouterLink>
-                </li>
-                <li>
-                    <RouterLink to="/">数码</RouterLink>
-                </li>
-                <li>
-                    <RouterLink to="/">运动</RouterLink>
-                </li>
-                <li>
-                    <RouterLink to="/">杂项</RouterLink>
-                </li>
+                <div class="right">
+                    <RouterLink to="/">品牌</RouterLink>
+                    <RouterLink to="/">专题</RouterLink>
+                </div>
             </ul>
-
-            <div class="right">
-                <RouterLink to="/">品牌</RouterLink>
-                <RouterLink to="/">专题</RouterLink>
-            </div>
         </div>
     </div>
 </template>
@@ -108,31 +84,29 @@ const { x, y } = useScroll(window)
 .app-header-nav {
     width: 820px;
     display: flex;
+    align-items: center;
     padding-left: 40px;
     position: relative;
     z-index: 998;
 
     li {
         margin-right: 40px;
-        width: 38px;
         text-align: center;
 
         a {
             font-size: 16px;
             line-height: 32px;
             height: 32px;
-            display: inline-block;
-
-            &:hover {
-                color: $xtxColor;
-                border-bottom: 1px solid $xtxColor;
-            }
-        }
-
-        .active {
-            color: $xtxColor;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
             border-bottom: 1px solid $xtxColor;
         }
+    }
+
+    .active {
+        color: $xtxColor;
+        border-bottom: 1px solid $xtxColor;
     }
 }
 </style>
