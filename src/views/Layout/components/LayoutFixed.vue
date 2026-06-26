@@ -10,18 +10,18 @@ const categoryStore = useCategoryStore()
         <div class="container">
             <RouterLink class="logo" to="/" />
             <!-- 导航区域 -->
-            <ul class="app-header-nav ">
+            <ul class="app-header-nav">
                 <li class="home">
                     <RouterLink to="/">首页</RouterLink>
                 </li>
                 <li class="home" v-for="item in categoryStore.categoryList" :key="item.id">
-                    <RouterLink to="/">{{ item.name }}</RouterLink>
+                    <RouterLink :to="`/category/${item.id}`">{{ item.name }}</RouterLink>
                 </li>
-                <div class="right">
-                    <RouterLink to="/">品牌</RouterLink>
-                    <RouterLink to="/">专题</RouterLink>
-                </div>
             </ul>
+            <div class="right">
+                <RouterLink to="/">品牌</RouterLink>
+                <RouterLink to="/">专题</RouterLink>
+            </div>
         </div>
     </div>
 </template>
@@ -64,7 +64,7 @@ const categoryStore = useCategoryStore()
     .right {
         width: 220px;
         display: flex;
-        text-align: center;
+        align-items: center;
         padding-left: 40px;
         border-left: 2px solid $xtxColor;
 
@@ -72,10 +72,14 @@ const categoryStore = useCategoryStore()
             width: 38px;
             margin-right: 40px;
             font-size: 16px;
-            line-height: 1;
+            line-height: 32px;
+            height: 32px;
+            display: inline-block;
+            text-align: center;
 
             &:hover {
                 color: $xtxColor;
+                border-bottom: 1px solid $xtxColor;
             }
         }
     }
@@ -91,16 +95,19 @@ const categoryStore = useCategoryStore()
 
     li {
         margin-right: 40px;
+        width: 38px;
         text-align: center;
 
         a {
             font-size: 16px;
             line-height: 32px;
             height: 32px;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
-            border-bottom: 1px solid $xtxColor;
+            display: inline-block;
+
+            &:hover {
+                color: $xtxColor;
+                border-bottom: 1px solid $xtxColor;
+            }
         }
     }
 
