@@ -2,7 +2,7 @@
 import HomePanel from './HomePanel.vue'
 import { getGoodsAPI } from '@/apis/home.js'
 import { ref, onMounted } from 'vue'
-import goodItem from './Goodsitem.vue'
+import GoodItem from './Goodsitem.vue'
 const goodsProduct = ref([])
 
 const getGoods = async () => {
