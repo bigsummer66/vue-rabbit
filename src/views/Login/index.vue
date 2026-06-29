@@ -6,7 +6,7 @@ import { ref } from 'vue'
 const form = ref({
     account: '',
     password: '',
-    agree: true
+    agree: false
 })
 
 //2.准备校验规则
@@ -32,7 +32,21 @@ const rules = {
     ]
 }
 
+//获取表单实例
+const formRef = ref(null)
 
+const doLogin = () => {
+    //表单校验
+    formRef.value.validate((valid) => {
+        if (valid) {
+            //校验通过，发送请求
+            console.log('登录成功')
+        } else {
+            console.log('登录失败')
+            return false
+        }
+    })
+}
 
 
 </script>
@@ -59,7 +73,8 @@ const rules = {
                 </nav>
                 <div class="account-box">
                     <div class="form">
-                        <el-form :model="form" :rules="rules" label-position="right" label-width="60px" status-icon>
+                        <el-form ref="formRef" :model="form" :rules="rules" label-position="right" label-width="60px"
+                            status-icon>
                             <el-form-item prop="account" label="账户">
                                 <el-input v-model="form.account" />
                             </el-form-item>
@@ -71,7 +86,7 @@ const rules = {
                                     我已同意隐私条款和服务条款
                                 </el-checkbox>
                             </el-form-item>
-                            <el-button size="large" class="subBtn">点击登录</el-button>
+                            <el-button size="large" class="subBtn" @click="doLogin">点击登录</el-button>
                         </el-form>
                     </div>
                 </div>
