@@ -1,4 +1,5 @@
 <script setup>
+
 import { ref } from 'vue'
 import { useMouseInElement } from '@vueuse/core'
 import { watch } from 'vue'
@@ -42,6 +43,7 @@ watch([elementX, elementY, isOutside], () => {
     if (elementX.value < 100) {
         left.value = 0
     }
+
     if (elementY.value < 100) {
         top.value = 0
     }
