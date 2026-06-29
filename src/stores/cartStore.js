@@ -11,10 +11,14 @@ export const useCartStore = defineStore('cart', () => {
             cartList.value.push(goods)
         }
     }
-
+    // 删除购物车中的商品
+    const delCart = (skuId) => {
+        cartList.value = cartList.value.filter((item) => item.skuId !== skuId)
+    }
     return {
         cartList,
-        addCart
+        addCart,
+        delCart
     }
 }, {
     persist: true // 持久化存储购物车数据
