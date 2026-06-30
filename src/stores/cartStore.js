@@ -1,20 +1,23 @@
-//封装购物车模块
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/userStore'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { computed } from 'vue'
-import { insertCartAPI, findNewCartListAPI } from '@/apis/cart'
+import { ref, computed } from 'vue'
+import { insertCartAPI, findNewCartListAPI, delCartAPI } from '@/apis/cart'
+
 export const useCartStore = defineStore('cart', () => {
     const userStore = useUserStore() // 获取用户信息
-    const isLogin = computed(() => userStore.userInfo.token)
+    const isLogin = computed(() => userStore.userInfo?.token)
     const cartList = ref([])
+
+    const updateNewList = async () => {
+        const res = await findNewCartListAPI()
+        cartList.value = res.result
+    }
+
     const addCart = async (goods) => {
         const { skuId, count } = goods
-        // 如果用户已登录，调用插入购物车的API
         if (isLogin.value) {
             await insertCartAPI({ skuId, count })
-            const res = await findNewCartListAPI()
-            cartList.value = res.result
+            await updateNewList()
         } else {
             const item = cartList.value.find((item) => goods.skuId === item.skuId)
             if (item) {
@@ -26,9 +29,25 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     // 删除购物车中的商品
-    const delCart = (skuId) => {
-        cartList.value = cartList.value.filter((item) => item.skuId !== skuId)
+    const delCart = async (skuId) => {
+        if (isLogin.value) {
+            await delCartAPI([skuId])
+            await updateNewList()
+        } else {
+            cartList.value = cartList.value.filter((item) => item.skuId !== skuId)
+        }
     }
+
+    // 清空购物车
+    const clearCart = async () => {
+        if (isLogin.value) {
+            // 如果有清空购物车的 API，可在此调用；否则直接清空本地列表
+            cartList.value = []
+        } else {
+            cartList.value = []
+        }
+    }
+
     // 计算购物车中商品的总数量
     const totalNum = computed(() => {
         return cartList.value.reduce((total, item) => total + item.count, 0)
@@ -51,14 +70,6 @@ export const useCartStore = defineStore('cart', () => {
         return cartList.value.filter((item) => item.selected).reduce((total, item) => total + item.price * item.count, 0)
     })
 
-
-
-
-
-
-
-
-
     //单选功能
     const singleCheck = (skuId, selected) => {
         const item = cartList.value.find((item) => item.skuId === skuId)
@@ -72,13 +83,11 @@ export const useCartStore = defineStore('cart', () => {
         })
     }
 
-
-
-
     return {
         cartList,
         addCart,
         delCart,
+        clearCart,
         totalNum,
         totalPrice,
         singleCheck,
@@ -86,7 +95,6 @@ export const useCartStore = defineStore('cart', () => {
         allCheck,
         selectedCount,
         selectedPrice
-
     }
 }, {
     persist: true
