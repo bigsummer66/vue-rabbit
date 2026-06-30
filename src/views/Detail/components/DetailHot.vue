@@ -3,7 +3,6 @@
 import { getHotGoodsAPI } from '@/apis/detail'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { defineProps } from 'vue'
 import { computed } from 'vue'
 
 
