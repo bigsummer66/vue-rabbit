@@ -7,6 +7,10 @@ const singleCheck = (i, selected) => {
     // 修改单个商品的选中状态
     cartStore.singleCheck(i.skuId, selected)
 }
+const allCheck = (selected) => {
+    // 修改所有商品的选中状态
+    cartStore.allCheck(selected)
+}
 
 
 </script>
@@ -19,7 +23,7 @@ const singleCheck = (i, selected) => {
                     <thead>
                         <tr>
                             <th width="120">
-                                <el-checkbox />
+                                <el-checkbox :model-value="cartStore.isAll" @change="allCheck" />
                             </th>
                             <th width="400">商品信息</th>
                             <th width="220">单价</th>
