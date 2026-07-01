@@ -40,12 +40,8 @@ export const useCartStore = defineStore('cart', () => {
 
     // 清空购物车
     const clearCart = async () => {
-        if (isLogin.value) {
-            // 如果有清空购物车的 API，可在此调用；否则直接清空本地列表
-            cartList.value = []
-        } else {
-            cartList.value = []
-        }
+        // 如果有清空购物车的 API，可在此调用；否则直接清空本地列表
+        cartList.value = []
     }
 
     // 计算购物车中商品的总数量
