@@ -97,7 +97,10 @@ const createOrder = async () => {
         addressId: curAddress.value.id,
     })
     const orderId = res.result.id
-    await cartStore.clearCart()
+
+    // 刷新购物车列表，让后端根据已提交的订单自行移除已结算商品
+    await cartStore.updateNewList()
+
     router.push({
         path: '/pay',
         query: {
