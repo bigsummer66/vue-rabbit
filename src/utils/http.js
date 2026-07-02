@@ -7,7 +7,7 @@ import router from '@/router'
 //设置请求头
 const httpInstance = axios.create({
     baseURL: 'https://pcapi-xiaotuxian-front-devtest.itheima.net',
-    timeout: 5000 // 请求超时时间
+    timeout: 30000 // 请求超时时间
 })
 //请求拦截器
 httpInstance.interceptors.request.use(config => {
@@ -31,14 +31,14 @@ httpInstance.interceptors.response.use(res => res.data, e => {
     //统一错误提示
     ElMessage({
         type: 'error',
-        message: e.response.data.message
+        message: e.response?.data?.message
     })
     //401token失效处理
 
     //1.清除本地用户数据
 
     //2.跳转到登录页面
-    if (e.response.status === 401) {
+    if (e.response?.status === 401) {
         //1.清除本地用户数据
         userStore.clearUserInfo()
         //2.跳转到登录页面
