@@ -7,3 +7,20 @@ export const getCheckoutInfoAPI = () => {
         url: '/member/order/pre'
     })
 }
+
+
+export const createOrderAPI = (data) => {
+    return httpInstance({
+        url: '/member/order',
+        method: 'POST',
+        data
+    })
+}
+
+export const addAddressAPI = (data) => {
+    return httpInstance({
+        url: '/member/address',
+        method: 'POST',
+        data
+    })
+}

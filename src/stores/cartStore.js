@@ -1,7 +1,7 @@
 import { useUserStore } from '@/stores/userStore'
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { insertCartAPI, findNewCartListAPI, delCartAPI } from '@/apis/cart'
+import { insertCartAPI, findNewCartListAPI, delCartAPI, updateCartAPI, updateCartSelectedAPI, clearCartAPI } from '@/apis/cart'
 
 export const useCartStore = defineStore('cart', () => {
     const userStore = useUserStore() // 获取用户信息
@@ -40,8 +40,13 @@ export const useCartStore = defineStore('cart', () => {
 
     // 清空购物车
     const clearCart = async () => {
-        // 如果有清空购物车的 API，可在此调用；否则直接清空本地列表
-        cartList.value = []
+        if (isLogin.value) {
+            const ids = cartList.value.map((item) => item.skuId)
+            await clearCartAPI(ids)
+            await updateNewList()
+        } else {
+            cartList.value = []
+        }
     }
 
     // 计算购物车中商品的总数量
@@ -67,16 +72,40 @@ export const useCartStore = defineStore('cart', () => {
     })
 
     //单选功能
-    const singleCheck = (skuId, selected) => {
-        const item = cartList.value.find((item) => item.skuId === skuId)
-        if (item) {
-            item.selected = selected
+    const singleCheck = async (skuId, selected) => {
+        if (isLogin.value) {
+            await updateCartAPI(skuId, { selected })
+            await updateNewList()
+        } else {
+            const item = cartList.value.find((item) => item.skuId === skuId)
+            if (item) {
+                item.selected = selected
+            }
         }
     }
-    const allCheck = (selected) => {
-        cartList.value.forEach((item) => {
-            item.selected = selected
-        })
+
+    const allCheck = async (selected) => {
+        if (isLogin.value) {
+            const ids = cartList.value.map((item) => item.skuId)
+            await updateCartSelectedAPI({ selected, ids })
+            await updateNewList()
+        } else {
+            cartList.value.forEach((item) => {
+                item.selected = selected
+            })
+        }
+    }
+
+    const changeCount = async (skuId, count) => {
+        if (isLogin.value) {
+            await updateCartAPI(skuId, { count })
+            await updateNewList()
+        } else {
+            const item = cartList.value.find((item) => item.skuId === skuId)
+            if (item) {
+                item.count = count
+            }
+        }
     }
 
     return {
@@ -89,6 +118,7 @@ export const useCartStore = defineStore('cart', () => {
         singleCheck,
         isAll,
         allCheck,
+        changeCount,
         selectedCount,
         selectedPrice,
         updateNewList

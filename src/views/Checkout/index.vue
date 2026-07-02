@@ -1,28 +1,49 @@
 <script setup>
-import { getCheckoutInfoAPI } from '@/apis/checkout'
-import { onMounted, ref } from 'vue'
+import { getCheckoutInfoAPI, createOrderAPI, addAddressAPI } from '@/apis/checkout'
+import { onMounted, ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCartStore } from '@/stores/cartStore'
+import { ElMessage } from 'element-plus'
+
+const router = useRouter() // 路由对象
+const cartStore = useCartStore()
 const checkInfo = ref({})  // 订单对象
 const curAddress = ref({})  // 默认地址对象
+const showDialog = ref(false)  // 切换地址弹框
+const showAddDialog = ref(false)  // 添加地址弹框
+
+const defaultAddressForm = {
+    receiver: '',
+    contact: '',
+    provinceCode: '',
+    cityCode: '',
+    countyCode: '',
+    address: '',
+    postalCode: '',
+    addressTags: '',
+    isDefault: 0,
+    fullLocation: ''
+}
+
+const addressForm = reactive({ ...defaultAddressForm })
+
+const resetAddressForm = () => {
+    Object.assign(addressForm, { ...defaultAddressForm })
+}
+
 const getCheckInfo = async () => {
     const res = await getCheckoutInfoAPI()
     checkInfo.value = res.result
-    //适配默认地址//isDefault等于0的那一项
     const item = checkInfo.value?.userAddresses?.find(item => item.isDefault === 0)
-    curAddress.value = item
+    curAddress.value = item || checkInfo.value?.userAddresses?.[0] || {}
 }
 
 onMounted(() => {
     getCheckInfo()
 })
 
-
-
-//控制弹框打开
-const showDialog = ref(false)  // 切换地址弹框
-
-
 //切换地址回调
-const activeAddress = ref({})  // 添加地址弹框
+const activeAddress = ref({})
 const switchAddress = (item) => {
     activeAddress.value = item
 }
@@ -30,9 +51,60 @@ const switchAddress = (item) => {
 const confirm = () => {
     curAddress.value = activeAddress.value
     showDialog.value = false
-    activeAddress.value = {}  // 清空地址
+    activeAddress.value = {}
 }
 
+const addAddress = async () => {
+    if (!addressForm.receiver || !addressForm.contact || !addressForm.provinceCode || !addressForm.cityCode || !addressForm.countyCode || !addressForm.address || !addressForm.postalCode || !addressForm.addressTags || !addressForm.fullLocation) {
+        ElMessage.warning('请完整填写收货地址信息')
+        return
+    }
+
+    const res = await addAddressAPI({ ...addressForm })
+    ElMessage.success('添加收货地址成功')
+    showAddDialog.value = false
+    resetAddressForm()
+    await getCheckInfo()
+
+    const newAddress = checkInfo.value?.userAddresses?.find(item => item.id === res.result.id)
+    if (newAddress) {
+        curAddress.value = newAddress
+    }
+}
+
+const createOrder = async () => {
+    const goods = checkInfo.value?.goods || []
+
+    if (!goods.length) {
+        ElMessage.warning('当前没有可提交的商品')
+        return
+    }
+
+    if (!curAddress.value?.id) {
+        ElMessage.warning('请先选择或添加收货地址')
+        return
+    }
+
+    const res = await createOrderAPI({
+        deliveryTimeType: 1,
+        payType: 1,
+        payChannel: 1,
+        buyerMessage: '',
+        goods: goods.map(item => ({
+            skuId: item.skuId,
+            count: item.count
+        })),
+        addressId: curAddress.value.id,
+    })
+    const orderId = res.result.id
+    await cartStore.clearCart()
+    router.push({
+        path: '/pay',
+        query: {
+            id: orderId
+        }
+    })
+}
 </script>
 
 <template>
@@ -44,7 +116,7 @@ const confirm = () => {
                 <div class="box-body">
                     <div class="address">
                         <div class="text">
-                            <div class="none" v-if="!curAddress">您需要先添加收货地址才可提交订单。</div>
+                            <div class="none" v-if="!curAddress?.id">您需要先添加收货地址才可提交订单。</div>
                             <ul v-else>
                                 <li><span>收<i />货<i />人：</span>{{ curAddress.receiver }}</li>
                                 <li><span>联系方式：</span>{{ curAddress.contact }}</li>
@@ -53,7 +125,7 @@ const confirm = () => {
                         </div>
                         <div class="action">
                             <el-button size="large" @click="showDialog = true">切换地址</el-button>
-                            <el-button size="large" @click="addFlag = true">添加地址</el-button>
+                            <el-button size="large" @click="showAddDialog = true">添加地址</el-button>
                         </div>
                     </div>
                 </div>
@@ -127,7 +199,7 @@ const confirm = () => {
                 </div>
                 <!-- 提交订单 -->
                 <div class="submit">
-                    <el-button type="primary" size="large">提交订单</el-button>
+                    <el-button @click="createOrder" type="primary" size="large">提交订单</el-button>
                 </div>
             </div>
         </div>
@@ -152,6 +224,49 @@ const confirm = () => {
         </template>
     </el-dialog>
     <!-- 添加地址 -->
+    <el-dialog v-model="showAddDialog" title="添加收货地址" width="40%" center>
+        <el-form :model="addressForm" label-width="90px">
+            <el-form-item label="收货人">
+                <el-input v-model="addressForm.receiver" placeholder="请输入收货人姓名" />
+            </el-form-item>
+            <el-form-item label="联系方式">
+                <el-input v-model="addressForm.contact" placeholder="请输入手机号" />
+            </el-form-item>
+            <el-form-item label="省份编码">
+                <el-input v-model="addressForm.provinceCode" placeholder="请输入省份编码" />
+            </el-form-item>
+            <el-form-item label="城市编码">
+                <el-input v-model="addressForm.cityCode" placeholder="请输入城市编码" />
+            </el-form-item>
+            <el-form-item label="地区编码">
+                <el-input v-model="addressForm.countyCode" placeholder="请输入地区编码" />
+            </el-form-item>
+            <el-form-item label="详细地址">
+                <el-input v-model="addressForm.address" placeholder="请输入详细地址" />
+            </el-form-item>
+            <el-form-item label="邮政编码">
+                <el-input v-model="addressForm.postalCode" placeholder="请输入邮政编码" />
+            </el-form-item>
+            <el-form-item label="地址标签">
+                <el-input v-model="addressForm.addressTags" placeholder="例如 家里、公司" />
+            </el-form-item>
+            <el-form-item label="完整地址">
+                <el-input v-model="addressForm.fullLocation" placeholder="请输入完整地址" />
+            </el-form-item>
+            <el-form-item label="默认地址">
+                <el-radio-group v-model="addressForm.isDefault">
+                    <el-radio :label="0">设为默认</el-radio>
+                    <el-radio :label="1">普通地址</el-radio>
+                </el-radio-group>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="showAddDialog = false">取消</el-button>
+                <el-button type="primary" @click="addAddress">保存地址</el-button>
+            </span>
+        </template>
+    </el-dialog>
 </template>
 
 <style scoped lang="scss">

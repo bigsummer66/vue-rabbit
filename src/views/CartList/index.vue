@@ -53,7 +53,8 @@ const allCheck = (selected) => {
                                 <p>&yen;{{ i.price }}</p>
                             </td>
                             <td class="tc">
-                                <el-input-number v-model="i.count" />
+                                <el-input-number v-model="i.count"
+                                    @change="(count) => cartStore.changeCount(i.skuId, count)" />
                             </td>
                             <td class="tc">
                                 <p class="f16 red">&yen;{{ (i.price * i.count).toFixed(2) }}</p>
@@ -61,7 +62,7 @@ const allCheck = (selected) => {
                             <td class="tc">
                                 <p>
                                     <el-popconfirm title="确认删除吗?" confirm-button-text="确认" cancel-button-text="取消"
-                                        @confirm="() => delCart(i)">
+                                        @confirm="() => cartStore.delCart(i.skuId)">
                                         <template #reference>
                                             <a href="#" @click.prevent>删除</a>
                                         </template>
@@ -88,8 +89,8 @@ const allCheck = (selected) => {
                     共 {{ cartStore.allCount }} 件商品，已选择 {{ cartStore.selectedCount }} 件商品，商品合计：
                     <span class="red">¥ {{ cartStore.selectedPrice.toFixed(2) }} </span>
                 </div>
-                <div class="total" @click="$router.push('/checkout')">
-                    <el-button size="large" type="primary">下单结算</el-button>
+                <div class="total">
+                    <el-button size="large" type="primary" @click="$router.push('/checkout')">下单结算</el-button>
                 </div>
             </div>
         </div>
