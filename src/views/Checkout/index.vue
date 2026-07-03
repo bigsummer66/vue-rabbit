@@ -31,6 +31,11 @@ const resetAddressForm = () => {
     Object.assign(addressForm, { ...defaultAddressForm })
 }
 
+const deliveryTimeType = ref(1)
+const payType = ref(1)
+const payChannel = ref(1)
+const buyerMessage = ref('')
+
 const getCheckInfo = async () => {
     const res = await getCheckoutInfoAPI()
     checkInfo.value = res.result
@@ -41,6 +46,15 @@ const getCheckInfo = async () => {
 onMounted(() => {
     getCheckInfo()
 })
+
+const selectDeliveryTime = (type) => {
+    deliveryTimeType.value = type
+}
+
+const selectPayType = (type, channel) => {
+    payType.value = type
+    payChannel.value = channel
+}
 
 //切换地址回调
 const activeAddress = ref({})
@@ -86,10 +100,10 @@ const createOrder = async () => {
     }
 
     const res = await createOrderAPI({
-        deliveryTimeType: 1,
-        payType: 1,
-        payChannel: 1,
-        buyerMessage: '',
+        deliveryTimeType: deliveryTimeType.value,
+        payType: payType.value,
+        payChannel: payChannel.value,
+        buyerMessage: buyerMessage.value,
         goods: goods.map(item => ({
             skuId: item.skuId,
             count: item.count
@@ -167,16 +181,26 @@ const createOrder = async () => {
                 <!-- 配送时间 -->
                 <h3 class="box-title">配送时间</h3>
                 <div class="box-body">
-                    <a class="my-btn active" href="javascript:;">不限送货时间：周一至周日</a>
-                    <a class="my-btn" href="javascript:;">工作日送货：周一至周五</a>
-                    <a class="my-btn" href="javascript:;">双休日、假日送货：周六至周日</a>
+                    <a class="my-btn" :class="{ active: deliveryTimeType === 1 }" href="javascript:;"
+                        @click.prevent="selectDeliveryTime(1)">不限送货时间：周一至周日</a>
+                    <a class="my-btn" :class="{ active: deliveryTimeType === 2 }" href="javascript:;"
+                        @click.prevent="selectDeliveryTime(2)">工作日送货：周一至周五</a>
+                    <a class="my-btn" :class="{ active: deliveryTimeType === 3 }" href="javascript:;"
+                        @click.prevent="selectDeliveryTime(3)">双休日、假日送货：周六至周日</a>
                 </div>
                 <!-- 支付方式 -->
                 <h3 class="box-title">支付方式</h3>
                 <div class="box-body">
-                    <a class="my-btn active" href="javascript:;">在线支付</a>
-                    <a class="my-btn" href="javascript:;">货到付款</a>
+                    <a class="my-btn" :class="{ active: payType === 1 }" href="javascript:;"
+                        @click.prevent="selectPayType(1, 1)">在线支付</a>
+                    <a class="my-btn" :class="{ active: payType === 2 }" href="javascript:;"
+                        @click.prevent="selectPayType(2, 2)">货到付款</a>
                     <span style="color:#999">货到付款需付5元手续费</span>
+                </div>
+                <!-- 买家留言 -->
+                <h3 class="box-title">买家留言</h3>
+                <div class="box-body">
+                    <el-input type="textarea" v-model="buyerMessage" placeholder="请输入买家留言，可不填" :rows="3" />
                 </div>
                 <!-- 金额明细 -->
                 <h3 class="box-title">金额明细</h3>
