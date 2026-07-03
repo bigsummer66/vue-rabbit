@@ -12,61 +12,69 @@ const router = createRouter({
         {
           path: '',
           name: 'home',
-          component: () => import('@/views/Home/index.vue')
+          component: () => import('@/views/Home/index.vue'),
+          meta: { title: '首页' }
         },
         {
           path: '/category/:id',
           name: 'category',
-          component: () => import('@/views/Category/index.vue')
+          component: () => import('@/views/Category/index.vue'),
+          meta: { title: '分类页' }
         },
         {
           path: '/category/sub/:id',
           name: 'subcategory',
-          component: () => import('@/views/SubCategory/index.vue')
+          component: () => import('@/views/SubCategory/index.vue'),
+          meta: { title: '二级分类' }
         },
         {
           path: '/detail/:id',
           name: 'detail',
-          component: () => import('@/views/Detail/index.vue')
+          component: () => import('@/views/Detail/index.vue'),
+          meta: { title: '商品详情' }
         },
         {
           path: '/cartlist',
           name: 'cartlist',
-          component: () => import('@/views/CartList/index.vue')
+          component: () => import('@/views/CartList/index.vue'),
+          meta: { title: '购物车' }
         },
         {
           path: '/checkout',
           name: 'checkout',
           component: () => import('@/views/Checkout/index.vue'),
-          meta: { requiresAuth: true }
+          meta: { requiresAuth: true, title: '结算' }
         },
         {
           path: '/pay',
           name: 'pay',
           component: () => import('@/views/Pay/index.vue'),
-          meta: { requiresAuth: true }
+          meta: { requiresAuth: true, title: '支付' }
         },
         {
           path: '/paycallback',
           name: 'payback',
-          component: () => import('@/views/Pay/PayBack.vue')
+          component: () => import('@/views/Pay/PayBack.vue'),
+          meta: { title: '支付结果' }
         },
         {
           path: '/member',
           name: 'member',
           component: () => import('@/views/Member/index.vue'),
           redirect: '/member/user',
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: '会员中心' },
           children: [
             {
               path: 'user',
               name: 'member-info',
-              component: () => import('@/views/Member/components/UserInfo.vue')
+              component: () => import('@/views/Member/components/UserInfo.vue'),
+              meta: { title: '个人中心' }
             },
             {
               path: 'order',
               name: 'member-order',
-              component: () => import('@/views/Member/components/UserOrder.vue')
+              component: () => import('@/views/Member/components/UserOrder.vue'),
+              meta: { title: '我的订单' }
             }
           ]
         }
@@ -95,6 +103,10 @@ router.beforeEach((to) => {
   if (to.meta.guestOnly && isLoggedIn) {
     return { path: '/' }
   }
+})
+
+router.afterEach((to) => {
+  document.title = to.meta.title || '小兔鲜'
 })
 
 export default router

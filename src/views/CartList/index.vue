@@ -34,7 +34,7 @@ const allCheck = (selected) => {
                     </thead>
                     <!-- 商品列表 -->
                     <tbody>
-                        <tr v-for="i in cartStore.cartList" :key="i.id">
+                        <tr v-for="i in cartStore.cartList" :key="i.skuId">
                             <td>
                                 <el-checkbox :model-value="i.selected"
                                     @change="(selected) => singleCheck(i, selected)" />

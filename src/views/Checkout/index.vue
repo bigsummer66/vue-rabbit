@@ -160,7 +160,7 @@ const createOrder = async () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="i in checkInfo.goods" :key="i.id">
+                            <tr v-for="i in checkInfo.goods || []" :key="i.skuId">
                                 <td>
                                     <a href="javascript:;" class="info">
                                         <img :src="i.picture" alt="">
@@ -171,7 +171,7 @@ const createOrder = async () => {
                                     </a>
                                 </td>
                                 <td>&yen;{{ i.price }}</td>
-                                <td>{{ i.price }}</td>
+                                <td>{{ i.count }}</td>
                                 <td>&yen;{{ i.totalPrice }}</td>
                                 <td>&yen;{{ i.totalPayPrice }}</td>
                             </tr>
@@ -212,15 +212,15 @@ const createOrder = async () => {
                         </dl>
                         <dl>
                             <dt>商品总价：</dt>
-                            <dd>¥{{ checkInfo.summary?.totalPrice.toFixed(2) }}</dd>
+                            <dd>¥{{ checkInfo.summary?.totalPrice != null ? checkInfo.summary.totalPrice.toFixed(2) : '0.00' }}</dd>
                         </dl>
                         <dl>
                             <dt>运<i></i>费：</dt>
-                            <dd>¥{{ checkInfo.summary?.postFee.toFixed(2) }}</dd>
+                            <dd>¥{{ checkInfo.summary?.postFee != null ? checkInfo.summary.postFee.toFixed(2) : '0.00' }}</dd>
                         </dl>
                         <dl>
                             <dt>应付总额：</dt>
-                            <dd class="price">{{ checkInfo.summary?.totalPayPrice.toFixed(2) }}</dd>
+                            <dd class="price">{{ checkInfo.summary?.totalPayPrice != null ? checkInfo.summary.totalPayPrice.toFixed(2) : '0.00' }}</dd>
                         </dl>
                     </div>
                 </div>

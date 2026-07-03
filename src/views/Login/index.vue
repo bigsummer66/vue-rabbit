@@ -44,24 +44,26 @@ const rules = {
 
 //获取表单实例
 const formRef = ref(null)
+const loginLoading = ref(false)
 
-const doLogin = () => {
-    //表单校验
+const doLogin = async () => {
     const { account, password } = form.value
-    formRef.value.validate(async (valid) => {
-        if (valid) {
-            //校验通过，发送请求
-            await userStore.getUserInfo({ account, password })
-            //登录成功，跳转到首页
-            //1.提示用户
-            ElMessage({ type: 'success', message: '登录成功' })
-            //2.跳转到首页
-            router.replace({ path: route.query.redirect || '/' })
-        } else {
-            console.log('登录失败')
-            return false
-        }
-    })
+    try {
+        await formRef.value.validate()
+    } catch (validationError) {
+        return
+    }
+
+    loginLoading.value = true
+    try {
+        await userStore.getUserInfo({ account, password })
+        ElMessage({ type: 'success', message: '登录成功' })
+        router.replace({ path: route.query.redirect || '/' })
+    } catch (error) {
+        ElMessage({ type: 'error', message: error?.message || '登录失败，请检查用户名和密码' })
+    } finally {
+        loginLoading.value = false
+    }
 }
 
 
@@ -102,7 +104,7 @@ const doLogin = () => {
                                     我已同意隐私条款和服务条款
                                 </el-checkbox>
                             </el-form-item>
-                            <el-button size="large" class="subBtn" @click="doLogin">点击登录</el-button>
+                            <el-button size="large" class="subBtn" :loading="loginLoading" @click="doLogin">点击登录</el-button>
                         </el-form>
                     </div>
                 </div>

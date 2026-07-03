@@ -5,7 +5,7 @@ const userStore = useUserStore()
 const router = useRouter()
 const confirm = () => {
     userStore.clearUserInfo() // 清除用户信息
-    router.replace({ path: '/login' }) // 跳转到登录页
+    router.replace({ name: 'home' })
 }
 </script>
 

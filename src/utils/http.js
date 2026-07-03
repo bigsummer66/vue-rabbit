@@ -25,27 +25,31 @@ httpInstance.interceptors.request.use(config => {
 
 
 
+const showHttpError = (error) => {
+    const message = error.response?.data?.message || error.message || '请求失败，请重试'
+    ElMessage({ type: 'error', message })
+}
+
 //响应式拦截器
-httpInstance.interceptors.response.use(res => res.data, e => {
-    const userStore = useUserStore()
-    //统一错误提示
-    ElMessage({
-        type: 'error',
-        message: e.response?.data?.message
-    })
-    //401token失效处理
+httpInstance.interceptors.response.use(
+    res => res.data,
+    async (e) => {
+        const userStore = useUserStore()
+        if (!e.response) {
+            showHttpError({ message: '网络异常，请检查网络连接' })
+            return Promise.reject(e)
+        }
 
-    //1.清除本地用户数据
+        if (e.response?.status === 401) {
+            userStore.clearUserInfo()
+            router.replace({ path: '/login' })
+            showHttpError({ message: '登录状态已失效，请重新登录' })
+            return Promise.reject(e)
+        }
 
-    //2.跳转到登录页面
-    if (e.response?.status === 401) {
-        //1.清除本地用户数据
-        userStore.clearUserInfo()
-        //2.跳转到登录页面
-        router.replace({ path: '/login' }) //跳转到登录页面
+        showHttpError(e)
+        return Promise.reject(e)
     }
-    //统一错误处理
-    return Promise.reject(e)
-})
+)
 
 export default httpInstance
