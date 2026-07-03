@@ -3,14 +3,16 @@ import { getUserOrder } from '@/apis/order'
 import { onMounted, ref } from 'vue'
 // tab列表
 const tabTypes = [
-    { name: "all", label: "全部订单" },
-    { name: "unpay", label: "待付款" },
-    { name: "deliver", label: "待发货" },
-    { name: "receive", label: "待收货" },
-    { name: "comment", label: "待评价" },
-    { name: "complete", label: "已完成" },
-    { name: "cancel", label: "已取消" }
+    { name: "all", label: "全部订单", orderState: 0 },
+    { name: "unpay", label: "待付款", orderState: 1 },
+    { name: "deliver", label: "待发货", orderState: 2 },
+    { name: "receive", label: "待收货", orderState: 3 },
+    { name: "comment", label: "待评价", orderState: 4 },
+    { name: "complete", label: "已完成", orderState: 5 },
+    { name: "cancel", label: "已取消", orderState: 6 }
 ]
+
+const tabStateMap = Object.fromEntries(tabTypes.map(tab => [tab.name, tab.orderState]))
 // 获取订单列表
 const orderList = ref([])
 const total = ref(0)
@@ -28,15 +30,14 @@ const getOrderList = async () => {
 onMounted(() => getOrderList())
 
 // tab切换
-const tabChange = (type) => {
-    console.log(type)
-    params.value.orderState = type
+const tabChange = (tabName) => {
+    params.value.orderState = tabStateMap[tabName] ?? 0
+    params.value.page = 1
     getOrderList()
 }
 
 // 页数切换
 const pageChange = (page) => {
-    console.log(page)
     params.value.page = page
     getOrderList()
 }
@@ -59,7 +60,7 @@ const fomartPayState = (payState) => {
     <div class="order-container">
         <el-tabs @tab-change="tabChange">
             <!-- tab切换 -->
-            <el-tab-pane v-for="item in tabTypes" :key="item.name" :label="item.label" />
+            <el-tab-pane v-for="item in tabTypes" :key="item.name" :name="item.name" :label="item.label" />
 
             <div class="main-container">
                 <div class="holder-container" v-if="orderList.length === 0">

@@ -1,80 +1,72 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '@/views/Login/index.vue'
-import Layout from '@/views/Layout/index.vue'
-import Home from '@/views/Home/index.vue'
-import Category from '@/views/Category/index.vue'
-import SubCategory from '@/views/SubCategory/index.vue'
-import Detail from '@/views/Detail/index.vue'
-import CartList from '@/views/CartList/index.vue'
-import Checkout from '@/views/Checkout/index.vue'
-import Pay from '@/views/Pay/index.vue'
-import PayBack from '@/views/Pay/PayBack.vue'
-import Member from '@/views/Member/index.vue'
-import UserOrder from '@/views/Member/components/UserOrder.vue'
-import UserInfo from '@/views/Member/components/UserInfo.vue'
+import { useUserStore } from '@/stores/userStore'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
       name: 'layout',
-      component: Layout,
+      component: () => import('@/views/Layout/index.vue'),
       children: [
         {
           path: '',
           name: 'home',
-          component: Home
+          component: () => import('@/views/Home/index.vue')
         },
         {
           path: '/category/:id',
           name: 'category',
-          component: Category
+          component: () => import('@/views/Category/index.vue')
         },
         {
           path: '/category/sub/:id',
           name: 'subcategory',
-          component: SubCategory
+          component: () => import('@/views/SubCategory/index.vue')
         },
         {
           path: '/detail/:id',
           name: 'detail',
-          component: Detail
+          component: () => import('@/views/Detail/index.vue')
         },
         {
           path: '/cartlist',
           name: 'cartlist',
-          component: CartList
+          component: () => import('@/views/CartList/index.vue')
         },
         {
           path: '/checkout',
           name: 'checkout',
-          component: Checkout
+          component: () => import('@/views/Checkout/index.vue'),
+          meta: { requiresAuth: true }
         },
         {
           path: '/pay',
           name: 'pay',
-          component: Pay
+          component: () => import('@/views/Pay/index.vue'),
+          meta: { requiresAuth: true }
         },
         {
           path: '/paycallback',
           name: 'payback',
-          component: PayBack
+          component: () => import('@/views/Pay/PayBack.vue')
         },
         {
           path: '/member',
           name: 'member',
-          component: Member,
+          component: () => import('@/views/Member/index.vue'),
           redirect: '/member/user',
+          meta: { requiresAuth: true },
           children: [
             {
               path: 'user',
               name: 'member-info',
-              component: UserInfo
+              component: () => import('@/views/Member/components/UserInfo.vue')
             },
             {
               path: 'order',
               name: 'member-order',
-              component: UserOrder
+              component: () => import('@/views/Member/components/UserOrder.vue')
             }
           ]
         }
@@ -83,14 +75,25 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: () => import('@/views/Login/index.vue'),
+      meta: { guestOnly: true }
     }
   ],
-  //路由滚动定制
   scrollBehavior() {
-    return {
-      top: 0
-    }
+    return { top: 0 }
+  }
+})
+
+router.beforeEach((to) => {
+  const userStore = useUserStore()
+  const isLoggedIn = Boolean(userStore.userInfo?.token)
+
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return { path: '/login', query: { redirect: to.fullPath } }
+  }
+
+  if (to.meta.guestOnly && isLoggedIn) {
+    return { path: '/' }
   }
 })
 

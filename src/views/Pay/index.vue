@@ -17,10 +17,10 @@ onMounted(() => {
     getPayInfo()
 })
 //跳转支付，携带订单id以及回调地址跳转
-const baseURL = 'http://pcapi-xiaotuxian-front-devtest.itheima.net/'
-const backURL = 'http://127.0.0.1:5173/paycallback'
+const payBaseURL = import.meta.env.VITE_PAY_BASE_URL
+const backURL = new URL(`${import.meta.env.BASE_URL}paycallback`, window.location.origin).href
 const redirectUrl = encodeURIComponent(backURL)
-const payUrl = `${baseURL}pay/aliPay?orderId=${route.query.id}&redirect=${redirectUrl}`
+const payUrl = `${payBaseURL}pay/aliPay?orderId=${route.query.id}&redirect=${redirectUrl}`
 </script>
 
 

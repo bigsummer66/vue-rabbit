@@ -17,7 +17,7 @@ export const useCountDown = () => {
     }
     //组件销毁时清除定时器
     onUnmounted(() => {
-        time && clearInterval(timer)
+        if (timer) clearInterval(timer)
     })
     return {
         formatTime,

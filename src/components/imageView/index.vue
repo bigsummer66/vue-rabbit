@@ -27,7 +27,7 @@ const left = ref(0)
 const positionY = ref(0)
 const positionX = ref(0)
 watch([elementX, elementY, isOutside], () => {
-    if (!isOutside) return
+    if (isOutside.value) return
     if (elementX.value > 100 && elementX.value < 300) {
         left.value = elementX.value - 100
     }

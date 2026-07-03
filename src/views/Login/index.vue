@@ -2,12 +2,13 @@
 import { ref } from 'vue'
 import 'element-plus/theme-chalk/el-message.css'
 import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 
 const userStore = useUserStore()
 
 const router = useRouter()
+const route = useRoute()
 //表单校验（账号名＋密码）
 //1.准备表单对象
 const form = ref({
@@ -55,7 +56,7 @@ const doLogin = () => {
             //1.提示用户
             ElMessage({ type: 'success', message: '登录成功' })
             //2.跳转到首页
-            router.replace({ path: '/' })
+            router.replace({ path: route.query.redirect || '/' })
         } else {
             console.log('登录失败')
             return false

@@ -20,14 +20,11 @@ onMounted(() => {
 //sku
 let skuObj = {}
 const skuChange = (sku) => {
-    console.log(sku)
-    skuObj = sku; //更新sku
+    skuObj = sku
 }
 //count
 const count = ref(1)
-const countChange = (newCount) => {
-    console.log(newCount)
-}
+const countChange = () => {}
 const addCart = () => {
     if (skuObj.skuId) {
         //触发action

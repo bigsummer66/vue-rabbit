@@ -6,8 +6,8 @@ import { useUserStore } from '@/stores/userStore'
 import router from '@/router'
 //设置请求头
 const httpInstance = axios.create({
-    baseURL: 'https://pcapi-xiaotuxian-front-devtest.itheima.net',
-    timeout: 30000 // 请求超时时间
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    timeout: 30000
 })
 //请求拦截器
 httpInstance.interceptors.request.use(config => {
