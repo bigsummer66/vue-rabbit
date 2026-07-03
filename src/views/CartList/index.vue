@@ -1,7 +1,16 @@
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
+import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
+import { canProceedCheckout, getCheckoutBlockReason } from '@/utils/cart'
+
 const cartStore = useCartStore()
+const router = useRouter()
+
+const canCheckout = computed(() => {
+    return canProceedCheckout(cartStore.cartList, cartStore.selectedCount)
+})
 
 const singleCheck = (i, selected) => {
     // 修改单个商品的选中状态
@@ -12,6 +21,19 @@ const allCheck = (selected) => {
     cartStore.allCheck(selected)
 }
 
+const goHome = () => {
+    router.push('/')
+}
+
+const goCheckout = () => {
+    const blockReason = getCheckoutBlockReason(cartStore.cartList, cartStore.selectedCount)
+    if (blockReason) {
+        ElMessage.warning(blockReason)
+        return
+    }
+
+    router.push('/checkout')
+}
 
 </script>
 
@@ -74,7 +96,7 @@ const allCheck = (selected) => {
                             <td colspan="6">
                                 <div class="cart-none">
                                     <el-empty description="购物车列表为空">
-                                        <el-button type="primary">随便逛逛</el-button>
+                                        <el-button type="primary" @click="goHome">随便逛逛</el-button>
                                     </el-empty>
                                 </div>
                             </td>
@@ -90,7 +112,7 @@ const allCheck = (selected) => {
                     <span class="red">¥ {{ cartStore.selectedPrice.toFixed(2) }} </span>
                 </div>
                 <div class="total">
-                    <el-button size="large" type="primary" @click="$router.push('/checkout')">下单结算</el-button>
+                    <el-button size="large" type="primary" :disabled="!canCheckout" @click="goCheckout">下单结算</el-button>
                 </div>
             </div>
         </div>

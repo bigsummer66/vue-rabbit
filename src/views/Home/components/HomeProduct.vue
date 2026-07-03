@@ -1,25 +1,38 @@
 <script setup>
 import HomePanel from './HomePanel.vue'
 import { getGoodsAPI } from '@/apis/home.js'
-import { ref, onMounted } from 'vue'
 import GoodItem from './Goodsitem.vue'
-const goodsProduct = ref([])
+import { useAsyncData } from '@/composables/useAsyncData'
 
-const getGoods = async () => {
-    const res = await getGoodsAPI()
-    goodsProduct.value = res.result
-}
-onMounted(() => {
-    getGoods()
-})
+const {
+  data: goodsProduct,
+  loading,
+  error,
+  execute: getGoods
+} = useAsyncData(getGoodsAPI, { initialData: [] })
 </script>
 
 <template>
     <div class="home-product">
-        <HomePanel :title="cate.name" v-for="cate in goodsProduct" :key="cate.id">
+        <div v-if="error" class="container product-feedback">
+            <p>商品楼层加载失败</p>
+            <el-button type="primary" plain @click="getGoods">重新加载</el-button>
+        </div>
+        <div v-else-if="loading" class="container product-skeleton">
+            <div v-for="item in 2" :key="item" class="panel">
+                <div class="header skeleton-block"></div>
+                <div class="box">
+                    <div class="cover skeleton-block"></div>
+                    <div class="grid">
+                        <div v-for="card in 8" :key="card" class="card skeleton-block"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <HomePanel v-else :title="cate.name" v-for="cate in goodsProduct" :key="cate.id">
             <div class="box">
                 <RouterLink class="cover" :to="`/category/${cate.id}`">
-                    <img v-img-lazy="cate.picture" />
+                    <img v-img-lazy="cate.picture" :alt="cate.name" />
                     <strong class="label">
                         <span>{{ cate.name }}馆</span>
                         <span>{{ cate.saleInfo }}</span>
@@ -27,7 +40,7 @@ onMounted(() => {
                 </RouterLink>
                 <ul class="goods-list">
                     <li v-for="good in cate.goods" :key="good.id">
-                        <good-item :good="good" />
+                        <GoodItem :good="good" />
                     </li>
                 </ul>
             </div>
@@ -39,6 +52,48 @@ onMounted(() => {
 .home-product {
     background: #fff;
     margin-top: 20px;
+
+    .product-feedback,
+    .product-skeleton {
+        padding: 40px 0 60px;
+    }
+
+    .product-feedback {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        color: #5f6b66;
+    }
+
+    .panel + .panel {
+        margin-top: 40px;
+    }
+
+    .header {
+        width: 320px;
+        height: 36px;
+        border-radius: 999px;
+        margin-bottom: 24px;
+    }
+
+    .grid {
+        width: 990px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .card {
+        height: 300px;
+        border-radius: 12px;
+    }
+
+    .skeleton-block {
+        background: linear-gradient(90deg, #edf2ef 25%, #f8fbf9 37%, #edf2ef 63%);
+        background-size: 400% 100%;
+        animation: skeleton-loading 1.4s ease infinite;
+    }
 
     .sub {
         margin-bottom: 2px;
@@ -158,6 +213,16 @@ onMounted(() => {
                 font-size: 20px;
             }
         }
+    }
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0 50%;
     }
 }
 </style>

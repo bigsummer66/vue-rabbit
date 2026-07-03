@@ -7,9 +7,8 @@ const categoryStore = useCategoryStore()
     <div class="home-category">
         <ul class="menu">
             <li v-for="item in categoryStore.categoryList" :key="item.id">
-                <RouterLink :to="`/category/${item.id}`">{{ item.name }}</RouterLink>
-                <RouterLink v-for="i in item.children.slice(0, 2)" :key="i.id" :to="`/category/${i.id}`">{{ i.name }}
-                </RouterLink>
+                <RouterLink class="title-link" :to="`/category/${item.id}`">{{ item.name }}</RouterLink>
+                <a class="sub-link" v-for="i in item.children.slice(0, 2)" :key="i.id" href="javascript:;">{{ i.name }}</a>
                 <!-- 弹层layer位置 -->
                 <div class="layer">
                     <h4>分类推荐 <small>根据您的购买或浏览记录推荐</small></h4>
@@ -38,38 +37,53 @@ const categoryStore = useCategoryStore()
 .home-category {
     width: 250px;
     height: 500px;
-    background: rgba(0, 0, 0, 0.8);
+    background: linear-gradient(180deg, rgba(17, 33, 29, 0.96), rgba(17, 33, 29, 0.78));
+    border-radius: 24px 0 0 24px;
     position: relative;
-    z-index: 99;
+    z-index: 120;
+    backdrop-filter: blur(8px);
 
     .menu {
-        li {
-            padding-left: 40px;
+        >li {
+            padding-left: 32px;
             height: 55px;
             line-height: 55px;
+            transition: background-color .25s ease, padding-left .25s ease;
 
             &:hover {
-                background: $xtxColor;
+                background: linear-gradient(90deg, rgba(39, 186, 155, 0.92), rgba(39, 186, 155, 0.64));
+                padding-left: 36px;
             }
 
             a {
                 margin-right: 4px;
                 color: #fff;
+                opacity: 0.88;
+            }
 
-                &:first-child {
-                    font-size: 16px;
-                }
+            .title-link {
+                font-size: 16px;
+                font-weight: 600;
+                opacity: 1;
+            }
+
+            .sub-link {
+                font-size: 13px;
+                color: rgba(255, 255, 255, 0.75);
             }
 
             .layer {
                 width: 990px;
                 height: 500px;
-                background: rgba(255, 255, 255, 0.8);
+                background: rgba(255, 255, 255, 0.96);
                 position: absolute;
                 left: 250px;
                 top: 0;
+                z-index: 130;
                 display: none;
-                padding: 0 15px;
+                padding: 0 20px;
+                border-radius: 0 24px 24px 0;
+                box-shadow: 0 18px 40px rgba(29, 53, 45, 0.12);
 
                 h4 {
                     font-size: 20px;
@@ -82,22 +96,20 @@ const categoryStore = useCategoryStore()
                     }
                 }
 
-                ul {
-                    display: flex;
-                    flex-wrap: wrap;
+                >ul {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 15px;
 
-                    li {
-                        width: 310px;
+                    >li {
+                        width: 100%;
                         height: 120px;
-                        margin-right: 15px;
-                        margin-bottom: 15px;
+                        margin-right: 0;
+                        margin-bottom: 0;
                         border: 1px solid #eee;
-                        border-radius: 4px;
+                        border-radius: 14px;
                         background: #fff;
-
-                        &:nth-child(3n) {
-                            margin-right: 0;
-                        }
+                        box-shadow: 0 10px 22px rgba(29, 53, 45, 0.06);
 
                         a {
                             display: flex;
@@ -107,7 +119,7 @@ const categoryStore = useCategoryStore()
                             padding: 10px;
 
                             &:hover {
-                                background: #e3f9f4;
+                                background: linear-gradient(180deg, #f6fcfa, #ecf8f3);
                             }
 
                             img {

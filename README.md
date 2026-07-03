@@ -1,105 +1,67 @@
-# 小兔鲜电商前台（Vue Rabbit）
+# Vue Rabbit
 
-基于 Vue 3 的 B2C 电商单页应用，实现从商品浏览、SKU 选规格、购物车、结算下单到支付回调的完整购物流程。
+基于 `Vue 3 + Vite + Pinia + Element Plus` 的电商前台单页应用，覆盖首页推荐、分类浏览、商品详情、SKU 选购、购物车、结算下单、支付回调和会员中心等完整业务链路，适合作为前端实习求职作品展示。
 
-## 在线预览
+## 项目定位
 
-<!-- 部署成功后替换下方链接 -->
-**Demo：** 待部署（见下方「部署到 Vercel」）
+- 项目类型：B2C 电商前台 SPA
+- 项目目标：还原真实电商核心链路，并沉淀可复用的状态管理、接口封装与交互组件能力
+- 适用场景：前端实习简历项目、Vue 3 工程化练习、业务型作品集展示
 
-仓库地址：[github.com/bigsummer66/vue-rabbit](https://github.com/bigsummer66/vue-rabbit)
+## 核心亮点
 
-## 项目截图
-
-将截图放入 `docs/screenshots/` 后，README 会自动展示（建议宽度 1200px 左右）：
-
-| 首页 | 商品详情（SKU + 放大镜） |
-|------|--------------------------|
-| ![首页](./docs/screenshots/home.png) | ![详情](./docs/screenshots/detail.png) |
-
-| 购物车 | 结算下单 |
-|--------|----------|
-| ![购物车](./docs/screenshots/cart.png) | ![结算](./docs/screenshots/checkout.png) |
-
-**截图建议路径：**
-
-1. 首页 `/` — 轮播 + 分类导航
-2. 商品详情 `/detail/:id` — 选规格 + 放大镜
-3. 购物车 `/cartlist` — 勾选与合计
-4. 结算页 `/checkout`（需登录）
-
-本地开发运行 `npm run dev` 后，用浏览器全屏截图保存到 `docs/screenshots/` 即可。
+1. 基于 Vue 3 组合式 API 搭建电商业务模块，完成从浏览商品到支付回调的完整前台链路。
+2. 封装 `Axios` 请求实例与响应拦截器，统一处理鉴权失效、错误提示和登录回跳。
+3. 使用 `Pinia + pinia-plugin-persistedstate` 管理用户态与购物车数据，支持游客态持久化与登录后购物车合并。
+4. 实现 SKU 规格联动逻辑，通过幂集算法构建路径字典，支持无库存规格禁用。
+5. 基于 `IntersectionObserver` 自定义图片懒加载指令，并为首页补充骨架屏、失败重试和空态反馈，提升首屏体验。
+6. 使用路由懒加载、全局前置守卫和动态标题管理，提升页面性能与访问控制完整性。
 
 ## 功能概览
 
-| 模块 | 功能 |
-|------|------|
-| 首页 | 分类导航、轮播图、新品/热卖/全品类推荐 |
-| 分类 | 一级分类、二级分类、排序筛选、无限滚动加载 |
-| 商品详情 | 图片放大镜预览、SKU 规格选择、加入购物车 |
-| 购物车 | 单选/全选、数量修改、删除、本地/登录双模式 |
-| 结算下单 | 收货地址管理、配送/支付方式、提交订单 |
-| 支付 | 订单倒计时、支付宝跳转、支付结果回调 |
-| 会员中心 | 个人信息、订单列表（状态筛选 + 分页） |
-| 登录 | 表单校验、Token 持久化、登录后购物车合并 |
+| 模块 | 功能说明 |
+|------|----------|
+| 首页 | 分类导航、Banner、热卖推荐、楼层商品展示 |
+| 分类页 | 一级分类、二级分类、商品筛选、列表加载 |
+| 商品详情 | 图片预览、规格选择、数量选择、加入购物车 |
+| 购物车 | 单选/全选、数量修改、删除、价格汇总 |
+| 结算页 | 收货地址、配送方式、支付方式、提交订单 |
+| 支付页 | 订单倒计时、支付跳转、支付结果回调 |
+| 会员中心 | 用户信息、订单列表、状态切换 |
+| 登录页 | 表单校验、测试账号快捷填充、登录回跳 |
 
 ## 技术栈
 
-- **框架**：Vue 3.5 + Vite 8
-- **路由 / 状态**：Vue Router 5、Pinia 3 + `pinia-plugin-persistedstate`
-- **UI**：Element Plus（按需自动引入）
-- **网络**：Axios（请求/响应拦截器）
-- **工具**：VueUse、Day.js、SCSS
+- 框架：`Vue 3.5`、`Vite 8`
+- 路由：`Vue Router 5`
+- 状态管理：`Pinia 3`、`pinia-plugin-persistedstate`
+- UI 组件：`Element Plus`
+- 网络请求：`Axios`
+- 工具库：`VueUse`、`Day.js`
+- 样式方案：`SCSS`
+- 代码质量：`ESLint`、`Oxlint`
 
-## 项目亮点
+## 我做了什么
 
-1. **SKU 规格选择器**：基于幂集（Power Set）算法构建路径字典，实现多规格联动与无库存规格禁用
-2. **双模式购物车**：游客使用本地持久化购物车，登录后自动合并至服务端
-3. **图片懒加载**：自定义 `v-img-lazy` 指令，基于 `IntersectionObserver` 实现
-4. **商品放大镜**：`useMouseInElement` 实现局部放大预览
-5. **路由守卫**：结算、支付、会员中心等页面需登录后访问
-6. **路由懒加载**：按页面动态 `import()`，优化首屏加载
+- 按业务拆分接口层、状态层、页面层和组合式逻辑，提升代码可维护性。
+- 抽离 `useAsyncData` 统一处理异步请求的 `loading / error / retry` 状态。
+- 优化首页首屏体验，增加骨架屏、失败重试和更完整的购物车浮层空态。
+- 处理登录鉴权流程，支持未登录访问受限页面时自动跳转登录并回跳原页面。
+- 修复并完善工程配置，使 `npm run lint` 与 `npm run build` 可稳定通过。
 
-## 简历亮点描述建议
+## 简历描述参考
 
-- 使用 Vue 3 + Vite 构建电商 SPA，完成商品浏览、购物车、结算与支付流程
-- 基于 Pinia 管理用户与购物车状态，并使用 `pinia-plugin-persistedstate` 实现登录状态与购物车持久化
-- 封装 Axios 请求与响应拦截器，实现全局认证失效处理与统一错误提示
-- 设计路由懒加载与全局路由守卫，提高性能并保障页面访问权限
-- 使用自定义 Vue 指令实现图片懒加载，提升入口页加载性能
+### 一句话版本
 
-## 简历项目描述参考
+使用 Vue 3 + Vite 独立完成电商前台 SPA，涵盖商品浏览、SKU 选择、购物车、结算下单与支付回调，并通过 Pinia、Axios 拦截器、路由守卫和懒加载等方案提升状态管理、权限控制与页面体验。
 
-该项目为一个基于 Vue 3 和 Vite 的电商前端 SPA，完成从商品浏览、SKU 规格选择、购物车管理、结算下单到支付回调的完整业务流程。项目中使用 Pinia 管理全局状态，并结合 `pinia-plugin-persistedstate` 实现用户信息与购物车持久化；通过 Axios 拦截器统一处理请求错误与认证失效；同时实现路由懒加载、全局路由守卫、图片懒加载等优化，提高页面加载性能与用户体验。
+### 两到三条亮点版本
 
-## 简历项目经历示例
+- 基于 Vue 3 组合式 API 与 Pinia 搭建电商业务前台，完成首页、分类、商品详情、购物车、结算、支付和会员中心等核心页面开发。
+- 封装 Axios 请求实例与全局拦截器，统一处理认证失效、错误提示和登录回跳逻辑，提升接口层可维护性。
+- 实现 SKU 规格联动、游客购物车本地持久化与登录后购物车合并，并通过自定义图片懒加载、路由懒加载和骨架屏优化首屏体验。
 
-- 项目名称：小兔鲜电商前端
-- 技术栈：Vue 3、Vite、Pinia、Vue Router、Axios、Element Plus、SCSS
-- 主要功能：商品浏览、分类筛选、商品详情、SKU 规格选择、购物车管理、结算下单、支付回调、会员中心
-- 关键亮点：
-  - 使用 Pinia 管理用户、购物车、分类状态，并通过 `pinia-plugin-persistedstate` 实现登录态与购物车持久化
-  - 封装 Axios 请求与响应拦截器，统一处理认证失效、错误提示和登录跳转
-  - 实现路由懒加载与全局路由守卫，保护结算、支付、会员等登录后页面
-  - 基于 `IntersectionObserver` 自定义图片懒加载指令，提高页面首屏性能
-  - 实现登录后购物车自动合并及本地/登录双模式购物车体验
-- 成果：构建完整电商 SPA，提升代码模块化、页面性能和用户体验
-
-## 目录结构
-
-```
-src/
-├── apis/          # 接口按业务模块拆分
-├── components/    # 全局组件（SKU、图片预览）
-├── composables/   # 可复用组合式逻辑
-├── directives/    # 自定义指令（图片懒加载）
-├── router/        # 路由配置 + 导航守卫
-├── stores/        # Pinia 状态（用户、购物车、分类）
-├── utils/         # Axios 封装
-└── views/         # 页面组件
-```
-
-## 快速开始
+## 本地运行
 
 ### 环境要求
 
@@ -108,36 +70,28 @@ src/
 ### 安装依赖
 
 ```bash
-cd vue-rabbit
 npm install
 ```
 
 ### 环境变量
 
-复制示例文件并按需修改：
+复制 `.env.example` 为 `.env`，按需配置：
 
-```bash
-cp .env.example .env
-```
+| 变量名 | 说明 |
+|--------|------|
+| `VITE_API_BASE_URL` | 接口基础地址 |
+| `VITE_PAY_BASE_URL` | 支付跳转基础地址 |
 
-| 变量 | 说明 |
-|------|------|
-| `VITE_API_BASE_URL` | 接口基础地址（HTTPS） |
-| `VITE_PAY_BASE_URL` | 支付跳转基础地址（HTTP） |
-
-### 本地开发
+### 启动开发环境
 
 ```bash
 npm run dev
 ```
 
-访问 http://localhost:5173
-
-### 生产构建
+### 构建生产包
 
 ```bash
 npm run build
-npm run preview
 ```
 
 ### 代码检查
@@ -148,54 +102,39 @@ npm run lint
 
 ## 测试账号
 
-项目对接黑马测试 API，可使用以下账号体验完整流程：
-
 | 字段 | 值 |
-|------|-----|
-| 账号 | `zhousg` |
-| 密码 | `123456` |
+|------|----|
+| 账号 | `heima282` |
+| 密码 | `hm#qd@23!` |
 
-## 部署到 Vercel
+## 项目结构
 
-### 方式一：Vercel 控制台（推荐）
-
-1. 登录 [Vercel](https://vercel.com)，点击 **Add New Project**
-2. 导入 GitHub 仓库 `bigsummer66/vue-rabbit`
-3. **Root Directory** 填写 `vue-rabbit`
-4. **Environment Variables** 添加：
-
-   | Name | Value |
-   |------|-------|
-   | `VITE_API_BASE_URL` | `https://pcapi-xiaotuxian-front-devtest.itheima.net` |
-   | `VITE_PAY_BASE_URL` | `http://pcapi-xiaotuxian-front-devtest.itheima.net/` |
-
-5. 点击 **Deploy**，完成后将域名写入 README「在线预览」
-
-### 方式二：Vercel CLI
-
-```bash
-cd vue-rabbit
-npx vercel login    # 浏览器授权（仅需一次）
-npx vercel --prod   # 生产部署
+```text
+src
+├─ apis          # 按业务模块拆分接口
+├─ components    # 全局组件
+├─ composables   # 可复用组合式逻辑
+├─ directives    # 自定义指令
+├─ router        # 路由与鉴权
+├─ stores        # Pinia 状态管理
+├─ styles        # 全局样式变量
+├─ utils         # 请求封装与工具函数
+└─ views         # 页面模块
 ```
 
-部署成功后终端会输出 `Production: https://xxx.vercel.app`，复制到 README 即可。
+## 截图建议
 
-## 核心实现说明
+如果你要把仓库公开给面试官，建议补充以下截图放在 `docs/screenshots/`：
 
-### 购物车合并流程
+1. 首页首屏：分类导航 + Banner + 卖点信息
+2. 商品详情页：SKU 联动 + 放大镜预览
+3. 购物车页：价格汇总 + 勾选逻辑
+4. 结算页：地址/配送/支付方式
+5. 会员中心：订单列表与状态切换
 
-```
-游客加购 → localStorage 持久化
-    ↓
-用户登录 → 调用 mergeCartAPI 合并本地购物车
-    ↓
-拉取服务端最新购物车列表
-```
+## 部署建议
 
-### 路由鉴权
-
-访问 `meta.requiresAuth: true` 的路由时，若未登录则跳转 `/login?redirect=原路径`，登录成功后自动回跳。
+推荐使用 [Vercel](https://vercel.com/) 部署，并在 README 顶部补充在线访问地址，方便投递简历时直接展示。
 
 ## License
 

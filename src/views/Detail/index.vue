@@ -2,6 +2,7 @@
 import { getDetail } from '@/apis/detail'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import DetailHot from './components/DetailHot.vue'
 import { useCartStore } from '@/stores/cartStore.js'
 const cartStore = useCartStore() //获取购物车store

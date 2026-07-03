@@ -1,38 +1,42 @@
 <script setup>
 import { useCartStore } from '@/stores/cartStore'
-const cartStore = useCartStore() // 获取购物车store实例
+
+const cartStore = useCartStore()
 </script>
 
 <template>
     <div class="cart">
-        <a class="curr" href="javascript:;">
-            <i class="iconfont icon-cart"></i><em>{{ cartStore.cartList?.length }}</em>
-        </a>
-        <div class="layer">
+        <RouterLink class="curr" to="/cartlist" aria-label="查看购物车">
+            <i class="iconfont icon-cart"></i><em>{{ cartStore.totalNum }}</em>
+        </RouterLink>
+        <div v-if="!cartStore.cartList.length" class="layer empty-layer">
+            <p class="empty-title">购物车还是空的</p>
+            <p class="empty-desc">先去挑几件喜欢的商品吧</p>
+            <el-button type="primary" @click="$router.push('/')">去逛逛</el-button>
+        </div>
+        <div v-else class="layer">
             <div class="list">
-
-                <div class="item" v-for="i in cartStore.cartList" :key="i">
-                    <RouterLink to="">
-                        <img :src="i.picture" alt="" />
+                <div class="item" v-for="item in cartStore.cartList" :key="item.skuId">
+                    <RouterLink :to="item.id ? `/detail/${item.id}` : '/cartlist'">
+                        <img :src="item.picture" :alt="item.name" />
                         <div class="center">
                             <p class="name ellipsis-2">
-                                {{ i.name }}
+                                {{ item.name }}
                             </p>
-                            <p class="attr ellipsis">{{ i.attrsText }}</p>
+                            <p class="attr ellipsis">{{ item.attrsText }}</p>
                         </div>
                         <div class="right">
-                            <p class="price">&yen;{{ i.price }}</p>
-                            <p class="count">x{{ i.count }}</p>
+                            <p class="price">&yen;{{ item.price }}</p>
+                            <p class="count">x{{ item.count }}</p>
                         </div>
                     </RouterLink>
-                    <i class="iconfont icon-close-new" @click="cartStore.delCart(i.skuId)"></i>
+                    <i class="iconfont icon-close-new" @click="cartStore.delCart(item.skuId)"></i>
                 </div>
-
             </div>
             <div class="foot">
                 <div class="total">
                     <p>{{ cartStore.totalNum }} 件商品</p>
-                    <p>&yen;{{ cartStore.totalPrice?.toFixed(2) }} </p>
+                    <p>&yen;{{ cartStore.totalPrice?.toFixed(2) }}</p>
                 </div>
                 <el-button size="large" type="primary" @click="$router.push('/cartlist')">去购物车结算</el-button>
             </div>
@@ -84,7 +88,7 @@ const cartStore = useCartStore() // 获取购物车store实例
         transition: all 0.4s 0.2s;
         transform: translateY(-200px) scale(1, 0);
         width: 400px;
-        height: 400px;
+        min-height: 220px;
         position: absolute;
         top: 50px;
         right: 0;
@@ -94,7 +98,7 @@ const cartStore = useCartStore() // 获取购物车store实例
         padding-top: 10px;
 
         &::before {
-            content: "";
+            content: '';
             position: absolute;
             right: 14px;
             top: -10px;
@@ -128,6 +132,25 @@ const cartStore = useCartStore() // 获取购物车store实例
                     }
                 }
             }
+        }
+    }
+
+    .empty-layer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 24px;
+        text-align: center;
+
+        .empty-title {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .empty-desc {
+            color: #999;
         }
     }
 

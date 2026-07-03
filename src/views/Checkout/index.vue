@@ -1,9 +1,10 @@
 <script setup>
 import { getCheckoutInfoAPI, createOrderAPI, addAddressAPI } from '@/apis/checkout'
-import { onMounted, ref, reactive } from 'vue'
+import { onMounted, ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
 import { ElMessage } from 'element-plus'
+import { validateAddressForm } from '@/utils/formValidators'
 
 const router = useRouter() // 路由对象
 const cartStore = useCartStore()
@@ -35,12 +36,33 @@ const deliveryTimeType = ref(1)
 const payType = ref(1)
 const payChannel = ref(1)
 const buyerMessage = ref('')
+const pageLoading = ref(false)
+const addressSubmitting = ref(false)
+const orderSubmitting = ref(false)
+const canSubmitOrder = computed(() => {
+    return Boolean(checkInfo.value?.goods?.length && curAddress.value?.id && !orderSubmitting.value)
+})
 
 const getCheckInfo = async () => {
-    const res = await getCheckoutInfoAPI()
-    checkInfo.value = res.result
-    const item = checkInfo.value?.userAddresses?.find(item => item.isDefault === 0)
-    curAddress.value = item || checkInfo.value?.userAddresses?.[0] || {}
+    pageLoading.value = true
+    try {
+        const res = await getCheckoutInfoAPI()
+        checkInfo.value = res.result
+
+        if (!checkInfo.value?.goods?.length) {
+            ElMessage.warning('没有可结算的商品，请先返回购物车勾选商品')
+            router.replace('/cartlist')
+            return
+        }
+
+        const item = checkInfo.value?.userAddresses?.find(item => item.isDefault === 0)
+        curAddress.value = item || checkInfo.value?.userAddresses?.[0] || {}
+        activeAddress.value = curAddress.value
+    } catch (error) {
+        ElMessage.error(error?.response?.data?.message || error?.message || '结算信息加载失败，请稍后重试')
+    } finally {
+        pageLoading.value = false
+    }
 }
 
 onMounted(() => {
@@ -63,30 +85,56 @@ const switchAddress = (item) => {
 }
 
 const confirm = () => {
-    curAddress.value = activeAddress.value
-    showDialog.value = false
-    activeAddress.value = {}
-}
-
-const addAddress = async () => {
-    if (!addressForm.receiver || !addressForm.contact || !addressForm.provinceCode || !addressForm.cityCode || !addressForm.countyCode || !addressForm.address || !addressForm.postalCode || !addressForm.addressTags || !addressForm.fullLocation) {
-        ElMessage.warning('请完整填写收货地址信息')
+    if (!activeAddress.value?.id) {
+        ElMessage.warning('请先选择一个收货地址')
         return
     }
 
-    const res = await addAddressAPI({ ...addressForm })
-    ElMessage.success('添加收货地址成功')
-    showAddDialog.value = false
-    resetAddressForm()
-    await getCheckInfo()
+    curAddress.value = activeAddress.value
+    showDialog.value = false
+}
 
-    const newAddress = checkInfo.value?.userAddresses?.find(item => item.id === res.result.id)
-    if (newAddress) {
-        curAddress.value = newAddress
+const addAddress = async () => {
+    const message = validateAddressForm(addressForm)
+    if (message) {
+        ElMessage.warning(message)
+        return
+    }
+
+    addressSubmitting.value = true
+    try {
+        const res = await addAddressAPI({
+            ...addressForm,
+            receiver: addressForm.receiver.trim(),
+            contact: addressForm.contact.trim(),
+            provinceCode: addressForm.provinceCode.trim(),
+            cityCode: addressForm.cityCode.trim(),
+            countyCode: addressForm.countyCode.trim(),
+            address: addressForm.address.trim(),
+            postalCode: addressForm.postalCode.trim(),
+            addressTags: addressForm.addressTags.trim(),
+            fullLocation: addressForm.fullLocation.trim()
+        })
+        ElMessage.success('添加收货地址成功')
+        showAddDialog.value = false
+        resetAddressForm()
+        await getCheckInfo()
+
+        const newAddress = checkInfo.value?.userAddresses?.find(item => item.id === res.result.id)
+        if (newAddress) {
+            curAddress.value = newAddress
+            activeAddress.value = newAddress
+        }
+    } catch (error) {
+        ElMessage.error(error?.response?.data?.message || error?.message || '添加收货地址失败，请稍后重试')
+    } finally {
+        addressSubmitting.value = false
     }
 }
 
 const createOrder = async () => {
+    if (orderSubmitting.value) return
+
     const goods = checkInfo.value?.goods || []
 
     if (!goods.length) {
@@ -99,28 +147,34 @@ const createOrder = async () => {
         return
     }
 
-    const res = await createOrderAPI({
-        deliveryTimeType: deliveryTimeType.value,
-        payType: payType.value,
-        payChannel: payChannel.value,
-        buyerMessage: buyerMessage.value,
-        goods: goods.map(item => ({
-            skuId: item.skuId,
-            count: item.count
-        })),
-        addressId: curAddress.value.id,
-    })
-    const orderId = res.result.id
+    orderSubmitting.value = true
+    try {
+        const res = await createOrderAPI({
+            deliveryTimeType: deliveryTimeType.value,
+            payType: payType.value,
+            payChannel: payChannel.value,
+            buyerMessage: buyerMessage.value.trim(),
+            goods: goods.map(item => ({
+                skuId: item.skuId,
+                count: item.count
+            })),
+            addressId: curAddress.value.id,
+        })
+        const orderId = res.result.id
 
-    // 刷新购物车列表，让后端根据已提交的订单自行移除已结算商品
-    await cartStore.updateNewList()
+        await cartStore.updateNewList()
 
-    router.push({
-        path: '/pay',
-        query: {
-            id: orderId
-        }
-    })
+        router.push({
+            path: '/pay',
+            query: {
+                id: orderId
+            }
+        })
+    } catch (error) {
+        ElMessage.error(error?.response?.data?.message || error?.message || '提交订单失败，请稍后重试')
+    } finally {
+        orderSubmitting.value = false
+    }
 }
 </script>
 
@@ -128,6 +182,8 @@ const createOrder = async () => {
     <div class="xtx-pay-checkout-page">
         <div class="container">
             <div class="wrapper">
+                <el-skeleton v-if="pageLoading" :rows="10" animated />
+                <template v-else>
                 <!-- 收货地址 -->
                 <h3 class="box-title">收货地址</h3>
                 <div class="box-body">
@@ -226,8 +282,10 @@ const createOrder = async () => {
                 </div>
                 <!-- 提交订单 -->
                 <div class="submit">
-                    <el-button @click="createOrder" type="primary" size="large">提交订单</el-button>
+                    <el-button @click="createOrder" type="primary" size="large" :loading="orderSubmitting"
+                        :disabled="!canSubmitOrder">提交订单</el-button>
                 </div>
+                </template>
             </div>
         </div>
     </div>
@@ -245,7 +303,7 @@ const createOrder = async () => {
         </div>
         <template #footer>
             <span class="dialog-footer">
-                <el-button>取消</el-button>
+                <el-button @click="showDialog = false">取消</el-button>
                 <el-button type="primary" @click="confirm">确定</el-button>
             </span>
         </template>
@@ -289,14 +347,16 @@ const createOrder = async () => {
         </el-form>
         <template #footer>
             <span class="dialog-footer">
-                <el-button @click="showAddDialog = false">取消</el-button>
-                <el-button type="primary" @click="addAddress">保存地址</el-button>
+                <el-button @click="showAddDialog = false" :disabled="addressSubmitting">取消</el-button>
+                <el-button type="primary" @click="addAddress" :loading="addressSubmitting">保存地址</el-button>
             </span>
         </template>
     </el-dialog>
 </template>
 
 <style scoped lang="scss">
+@use 'sass:color';
+
 .xtx-pay-checkout-page {
     margin-top: 20px;
 
@@ -498,7 +558,7 @@ const createOrder = async () => {
         &.active,
         &:hover {
             border-color: $xtxColor;
-            background: lighten($xtxColor, 50%);
+            background: color.adjust($xtxColor, $lightness: 50%);
         }
 
         >ul {

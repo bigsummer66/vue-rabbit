@@ -4,13 +4,20 @@ import LayoutNav from './components/LayoutNav.vue'
 import LayoutFooter from './components/LayoutFooter.vue'
 import LayoutFixed from './components/LayoutFixed.vue'
 import { useCategoryStore } from '@/stores/categoryStore.js'
+import { useCartStore } from '@/stores/cartStore'
+import { useUserStore } from '@/stores/userStore'
 import { onMounted } from 'vue'
 
-//触发获取导航列表的action
 const categoryStore = useCategoryStore()
+const cartStore = useCartStore()
+const userStore = useUserStore()
 
 onMounted(() => {
-    categoryStore.getCategory()
+  categoryStore.getCategory()
+
+  if (userStore.userInfo?.token) {
+    cartStore.updateNewList().catch(() => {})
+  }
 })
 </script>
 <template>

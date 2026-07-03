@@ -1,9 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import 'element-plus/theme-chalk/el-message.css'
 import { ElMessage } from 'element-plus'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+import { normalizeLoginPayload } from '@/utils/formValidators'
 
 const userStore = useUserStore()
 
@@ -45,14 +46,28 @@ const rules = {
 //获取表单实例
 const formRef = ref(null)
 const loginLoading = ref(false)
+const canSubmitLogin = computed(() => {
+    return Boolean(form.value.account.trim() && form.value.password.trim() && form.value.agree && !loginLoading.value)
+})
+
+const fillDemoAccount = () => {
+    form.value.account = 'heima282'
+    form.value.password = 'hm#qd@23!'
+    form.value.agree = true
+}
 
 const doLogin = async () => {
-    const { account, password } = form.value
+    if (loginLoading.value) return
+
     try {
         await formRef.value.validate()
-    } catch (validationError) {
+    } catch {
         return
     }
+
+    const { account, password } = normalizeLoginPayload(form.value)
+    form.value.account = account
+    form.value.password = password
 
     loginLoading.value = true
     try {
@@ -60,7 +75,10 @@ const doLogin = async () => {
         ElMessage({ type: 'success', message: '登录成功' })
         router.replace({ path: route.query.redirect || '/' })
     } catch (error) {
-        ElMessage({ type: 'error', message: error?.message || '登录失败，请检查用户名和密码' })
+        ElMessage({
+            type: 'error',
+            message: error?.response?.data?.message || error?.message || '登录失败，请检查用户名和密码'
+        })
     } finally {
         loginLoading.value = false
     }
@@ -91,20 +109,26 @@ const doLogin = async () => {
                 </nav>
                 <div class="account-box">
                     <div class="form">
+                        <div class="demo-entry">
+                            <span>快速体验：</span>
+                            <button type="button" @click="fillDemoAccount">填充测试账号</button>
+                        </div>
                         <el-form ref="formRef" :model="form" :rules="rules" label-position="right" label-width="60px"
                             status-icon>
                             <el-form-item prop="account" label="账户">
-                                <el-input v-model="form.account" />
+                                <el-input v-model="form.account" maxlength="20" placeholder="请输入测试账号或自有账号" />
                             </el-form-item>
                             <el-form-item prop="password" label="密码">
-                                <el-input v-model="form.password" />
+                                <el-input v-model="form.password" type="password" maxlength="20" show-password placeholder="请输入密码"
+                                    @keyup.enter="doLogin" />
                             </el-form-item>
                             <el-form-item prop="agree" label-width="22px">
                                 <el-checkbox v-model="form.agree" size="large">
                                     我已同意隐私条款和服务条款
                                 </el-checkbox>
                             </el-form-item>
-                            <el-button size="large" class="subBtn" :loading="loginLoading" @click="doLogin">点击登录</el-button>
+                            <el-button size="large" class="subBtn" :loading="loginLoading" :disabled="!canSubmitLogin"
+                                @click="doLogin">点击登录</el-button>
                         </el-form>
                     </div>
                 </div>
@@ -174,18 +198,22 @@ const doLogin = async () => {
 }
 
 .login-section {
-    background: url('@/assets/images/login-bg.png') no-repeat center / cover;
+    background:
+        linear-gradient(120deg, rgba(15, 31, 27, 0.86), rgba(39, 186, 155, 0.48)),
+        url('@/assets/images/center-bg.png') no-repeat center / cover;
     height: 488px;
     position: relative;
 
     .wrapper {
         width: 380px;
-        background: #fff;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 20px;
         position: absolute;
         left: 50%;
         top: 54px;
         transform: translate3d(100px, 0, 0);
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur(10px);
 
         nav {
             font-size: 14px;
@@ -232,6 +260,42 @@ const doLogin = async () => {
 }
 
 .account-box {
+    .demo-entry {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 18px 20px 0;
+        color: #666;
+        font-size: 13px;
+
+        button {
+            border: 0;
+            background: rgba($xtxColor, 0.1);
+            color: $xtxColor;
+            border-radius: 999px;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: all .3s;
+
+            &:hover {
+                background: rgba($xtxColor, 0.18);
+            }
+        }
+    }
+
+    .form::before {
+        content: '测试账号已内置，可一键填充后直接体验完整流程';
+        display: block;
+        margin: 4px 0 14px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba($xtxColor, 0.08);
+        color: #4d635c;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
     .toggle {
         padding: 15px 40px;
         text-align: right;
