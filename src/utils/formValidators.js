@@ -1,6 +1,15 @@
+// @ts-check
+
+/** @typedef {import('@/types/business').AddressForm} AddressForm */
+/** @typedef {import('@/types/business').LoginPayload} LoginPayload */
+
 const phoneRegExp = /^1\d{10}$/
 const postalCodeRegExp = /^\d{6}$/
 
+/**
+ * @param {Partial<LoginPayload>} [payload={}]
+ * @returns {LoginPayload}
+ */
 export const normalizeLoginPayload = ({ account = '', password = '' } = {}) => {
   return {
     account: account.trim(),
@@ -8,6 +17,10 @@ export const normalizeLoginPayload = ({ account = '', password = '' } = {}) => {
   }
 }
 
+/**
+ * @param {Partial<AddressForm>} [form={}]
+ * @returns {string}
+ */
 export const validateAddressForm = (form = {}) => {
   const requiredFields = [
     ['receiver', '请填写收货人姓名'],

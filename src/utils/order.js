@@ -1,3 +1,12 @@
+// @ts-check
+
+/** @typedef {import('@/types/business').BuildOrderPayloadParams} BuildOrderPayloadParams */
+/** @typedef {import('@/types/business').OrderPayload} OrderPayload */
+
+/**
+ * @param {BuildOrderPayloadParams} params
+ * @returns {OrderPayload}
+ */
 export const buildOrderPayload = ({
   deliveryTimeType,
   payType,

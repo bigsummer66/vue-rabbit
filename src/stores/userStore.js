@@ -5,15 +5,25 @@ import { ref } from 'vue'
 import { loginAPI } from '@/apis/user'
 import { mergeCartAPI } from '@/apis/cart'
 import { buildMergeCartPayload } from '@/utils/user'
+
+/** @typedef {import('@/types/business').CartItem} CartItem */
+/** @typedef {import('@/types/business').LoginPayload} LoginPayload */
+
 export const useUserStore = defineStore('user', () => {
     const userInfo = ref({})
 
+    /**
+     * @param {CartItem[]} [cartList=[]]
+     */
     const mergeLocalCart = async (cartList = []) => {
         if (!cartList?.length) return
         const localData = buildMergeCartPayload(cartList)
         await mergeCartAPI(localData)
     }
 
+    /**
+     * @param {LoginPayload} payload
+     */
     const getUserInfo = async ({ account, password }) => {
         const res = await loginAPI({ account, password })
         userInfo.value = res.result
