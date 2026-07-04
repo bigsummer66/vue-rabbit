@@ -4,16 +4,13 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { loginAPI } from '@/apis/user'
 import { mergeCartAPI } from '@/apis/cart'
+import { buildMergeCartPayload } from '@/utils/user'
 export const useUserStore = defineStore('user', () => {
     const userInfo = ref({})
 
     const mergeLocalCart = async (cartList = []) => {
         if (!cartList?.length) return
-        const localData = cartList.map(item => ({
-            skuId: item.skuId,
-            selected: item.selected,
-            count: item.count
-        }))
+        const localData = buildMergeCartPayload(cartList)
         await mergeCartAPI(localData)
     }
 

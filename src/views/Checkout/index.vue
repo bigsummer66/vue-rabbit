@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
 import { ElMessage } from 'element-plus'
 import { validateAddressForm } from '@/utils/formValidators'
+import { buildOrderPayload } from '@/utils/order'
 
 const router = useRouter() // 路由对象
 const cartStore = useCartStore()
@@ -149,17 +150,14 @@ const createOrder = async () => {
 
     orderSubmitting.value = true
     try {
-        const res = await createOrderAPI({
+        const res = await createOrderAPI(buildOrderPayload({
             deliveryTimeType: deliveryTimeType.value,
             payType: payType.value,
             payChannel: payChannel.value,
-            buyerMessage: buyerMessage.value.trim(),
-            goods: goods.map(item => ({
-                skuId: item.skuId,
-                count: item.count
-            })),
+            buyerMessage: buyerMessage.value,
+            goods,
             addressId: curAddress.value.id,
-        })
+        }))
         const orderId = res.result.id
 
         await cartStore.updateNewList()
