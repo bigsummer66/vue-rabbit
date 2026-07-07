@@ -13,7 +13,7 @@ import HomeProduct from './components/HomeProduct.vue'
             <HomeBanner />
             <div class="hero-copy">
                 <p class="eyebrow">Vue 3 E-commerce Demo</p>
-                <h1>完整电商业务链路，适合作为前端实习作品展示</h1>
+                <h1>完整电商业务链路展示</h1>
                 <p class="summary">
                     从商品浏览、SKU 规格联动、购物车到结算支付，全流程覆盖常见电商前台核心场景。
                 </p>
