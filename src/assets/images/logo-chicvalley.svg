@@ -1,0 +1,20 @@
+<svg width="720" height="180" viewBox="0 0 720 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cv-gradient" x1="28" y1="18" x2="160" y2="152" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2EB596"/>
+      <stop offset="1" stop-color="#163A31"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="180" rx="20" fill="white"/>
+  <g>
+    <rect x="22" y="24" width="132" height="132" rx="34" fill="url(#cv-gradient)"/>
+    <path d="M55 64C61 51 72 43 88 43C104 43 116 49 124 61C126 64 125 69 122 71L112 79C108 82 103 81 100 77C96 71 90 68 83 68C71 68 63 76 63 88C63 101 72 110 87 110C100 110 111 104 120 95C123 92 128 92 131 95L141 103C144 106 144 111 141 114C129 127 111 136 88 136C59 136 38 116 38 88C38 79 44 68 55 64Z" fill="white"/>
+    <path d="M84 57C94 57 102 61 109 70" stroke="#C9F3E5" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="118" cy="57" r="8" fill="#C9F3E5"/>
+  </g>
+  <g>
+    <text x="186" y="84" fill="#17352D" font-size="44" font-weight="700" font-family="Georgia, 'Times New Roman', serif" letter-spacing="1.4">ChicValley</text>
+    <text x="188" y="118" fill="#5B6C66" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif" letter-spacing="5.2">CURATED LIVING</text>
+    <text x="188" y="144" fill="#2EB596" font-size="22" font-weight="700" font-family="'Microsoft YaHei', 'PingFang SC', sans-serif" letter-spacing="2">栖川里物</text>
+  </g>
+</svg>

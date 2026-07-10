@@ -55,10 +55,10 @@ const categoryStore = useCategoryStore()
     }
 
     .logo {
-        width: 200px;
+        width: 228px;
         height: 80px;
-        background: url("@/assets/images/logo.png") no-repeat right 2px;
-        background-size: 160px auto;
+        background: url("@/assets/images/logo-chicvalley.svg") no-repeat right center;
+        background-size: 204px auto;
     }
 
     .right {

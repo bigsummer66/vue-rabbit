@@ -12,9 +12,9 @@ const {
 </script>
 
 <template>
-    <HomePanel title="新鲜好物" sub-title="新鲜出炉 品质靠谱">
+    <HomePanel title="本周上新" sub-title="编辑精选 灵感到货">
         <div v-if="error" class="panel-feedback">
-            <p>新鲜好物加载失败</p>
+            <p>本周上新加载失败</p>
             <el-button type="primary" plain @click="getNewList">重新加载</el-button>
         </div>
         <ul v-else class="goods-list" :class="{ skeleton: loading }">

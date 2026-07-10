@@ -10,47 +10,41 @@ const userStore = useUserStore()
 
 const router = useRouter()
 const route = useRoute()
-//表单校验（账号名＋密码）
-//1.准备表单对象
+
 const form = ref({
     account: '',
     password: '',
     agree: false
 })
 
-
-
-//2.准备校验规则
 const rules = {
     account: [
         { required: true, message: '用户名不能为空', trigger: 'blur' }
     ],
     password: [
         { required: true, message: '密码不能为空', trigger: 'blur' },
-        { min: 6, max: 14, message: '密码长度在6到14位之间', trigger: 'blur' }
+        { min: 6, max: 14, message: '密码长度在 6 到 14 位之间', trigger: 'blur' }
     ],
     agree: [
         {
             validator: (rule, value, callback) => {
-                //自定义校验逻辑
                 if (value) {
                     callback()
                 } else {
-                    callback(new Error('请同意隐私条款'))
+                    callback(new Error('请先阅读并勾选协议'))
                 }
             },
         }
     ]
 }
 
-//获取表单实例
 const formRef = ref(null)
 const loginLoading = ref(false)
 const canSubmitLogin = computed(() => {
     return Boolean(form.value.account.trim() && form.value.password.trim() && form.value.agree && !loginLoading.value)
 })
 
-const fillDemoAccount = () => {
+const fillExperienceAccount = () => {
     form.value.account = 'heima282'
     form.value.password = 'hm#qd@23!'
     form.value.agree = true
@@ -83,20 +77,17 @@ const doLogin = async () => {
         loginLoading.value = false
     }
 }
-
-
 </script>
-
 
 <template>
     <div>
         <header class="login-header">
             <div class="container m-top-20">
                 <h1 class="logo">
-                    <RouterLink to="/">小兔鲜</RouterLink>
+                    <RouterLink to="/">栖川里物</RouterLink>
                 </h1>
                 <RouterLink class="entry" to="/">
-                    进入网站首页
+                    返回品牌首页
                     <i class="iconfont icon-angle-right"></i>
                     <i class="iconfont icon-angle-right"></i>
                 </RouterLink>
@@ -105,30 +96,49 @@ const doLogin = async () => {
         <section class="login-section">
             <div class="wrapper">
                 <nav>
-                    <a href="javascript:;">账户登录</a>
+                    <a href="javascript:;">账号登录</a>
                 </nav>
                 <div class="account-box">
                     <div class="form">
-                        <div class="demo-entry">
-                            <span>快速体验：</span>
-                            <button type="button" @click="fillDemoAccount">填充测试账号</button>
+                        <div class="experience-entry">
+                            <span>体验入口：</span>
+                            <button type="button" @click="fillExperienceAccount">一键填充体验账号</button>
                         </div>
-                        <el-form ref="formRef" :model="form" :rules="rules" label-position="right" label-width="60px"
-                            status-icon>
-                            <el-form-item prop="account" label="账户">
-                                <el-input v-model="form.account" maxlength="20" placeholder="请输入测试账号或自有账号" />
+                        <el-form
+                            ref="formRef"
+                            :model="form"
+                            :rules="rules"
+                            label-position="right"
+                            label-width="60px"
+                            status-icon
+                        >
+                            <el-form-item prop="account" label="账号">
+                                <el-input v-model="form.account" maxlength="20" placeholder="请输入体验账号或您的会员账号" />
                             </el-form-item>
                             <el-form-item prop="password" label="密码">
-                                <el-input v-model="form.password" type="password" maxlength="20" show-password placeholder="请输入密码"
-                                    @keyup.enter="doLogin" />
+                                <el-input
+                                    v-model="form.password"
+                                    type="password"
+                                    maxlength="20"
+                                    show-password
+                                    placeholder="请输入登录密码"
+                                    @keyup.enter="doLogin"
+                                />
                             </el-form-item>
                             <el-form-item prop="agree" label-width="22px">
                                 <el-checkbox v-model="form.agree" size="large">
-                                    我已同意隐私条款和服务条款
+                                    我已阅读并同意隐私政策与服务协议
                                 </el-checkbox>
                             </el-form-item>
-                            <el-button size="large" class="subBtn" :loading="loginLoading" :disabled="!canSubmitLogin"
-                                @click="doLogin">点击登录</el-button>
+                            <el-button
+                                size="large"
+                                class="subBtn"
+                                :loading="loginLoading"
+                                :disabled="!canSubmitLogin"
+                                @click="doLogin"
+                            >
+                                登录会员中心
+                            </el-button>
                         </el-form>
                     </div>
                 </div>
@@ -138,21 +148,21 @@ const doLogin = async () => {
         <footer class="login-footer">
             <div class="container">
                 <p>
-                    <a href="javascript:;">关于我们</a>
+                    <a href="javascript:;">关于品牌</a>
                     <a href="javascript:;">帮助中心</a>
                     <a href="javascript:;">售后服务</a>
-                    <a href="javascript:;">配送与验收</a>
+                    <a href="javascript:;">配送说明</a>
                     <a href="javascript:;">商务合作</a>
-                    <a href="javascript:;">搜索推荐</a>
-                    <a href="javascript:;">友情链接</a>
+                    <a href="javascript:;">编辑精选</a>
+                    <a href="javascript:;">合作伙伴</a>
                 </p>
-                <p>CopyRight &copy; 小兔鲜儿</p>
+                <p>Copyright &copy; 栖川里物 ChicValley</p>
             </div>
         </footer>
     </div>
 </template>
 
-<style scoped lang='scss'>
+<style scoped lang="scss">
 .login-header {
     background: #fff;
     border-bottom: 1px solid #e4e4e4;
@@ -164,14 +174,14 @@ const doLogin = async () => {
     }
 
     .logo {
-        width: 200px;
+        width: 232px;
 
         a {
             display: block;
             height: 132px;
             width: 100%;
             text-indent: -9999px;
-            background: url("@/assets/images/logo.png") no-repeat center 18px / contain;
+            background: url("@/assets/images/logo-chicvalley.svg") no-repeat center 16px / 214px auto;
         }
     }
 
@@ -260,7 +270,7 @@ const doLogin = async () => {
 }
 
 .account-box {
-    .demo-entry {
+    .experience-entry {
         display: flex;
         align-items: center;
         justify-content: flex-end;
@@ -285,7 +295,7 @@ const doLogin = async () => {
     }
 
     .form::before {
-        content: '测试账号已内置，可一键填充后直接体验完整流程';
+        content: '已预置体验账号，可快速进入完整下单链路，便于演示登录、购物车与结算流程。';
         display: block;
         margin: 4px 0 14px;
         padding: 10px 12px;

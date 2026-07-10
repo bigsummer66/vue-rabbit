@@ -19,7 +19,7 @@ const router = createRouter({
           path: '/category/:id',
           name: 'category',
           component: () => import('@/views/Category/index.vue'),
-          meta: { title: '分类页' }
+          meta: { title: '分类列表' }
         },
         {
           path: '/category/sub/:id',
@@ -43,13 +43,13 @@ const router = createRouter({
           path: '/checkout',
           name: 'checkout',
           component: () => import('@/views/Checkout/index.vue'),
-          meta: { requiresAuth: true, title: '结算' }
+          meta: { requiresAuth: true, title: '结算中心' }
         },
         {
           path: '/pay',
           name: 'pay',
           component: () => import('@/views/Pay/index.vue'),
-          meta: { requiresAuth: true, title: '支付' }
+          meta: { requiresAuth: true, title: '订单支付' }
         },
         {
           path: '/paycallback',
@@ -84,7 +84,7 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login/index.vue'),
-      meta: { guestOnly: true }
+      meta: { guestOnly: true, title: '会员登录' }
     }
   ],
   scrollBehavior() {
@@ -106,7 +106,7 @@ router.beforeEach((to) => {
 })
 
 router.afterEach((to) => {
-  document.title = to.meta.title || '小兔鲜'
+  document.title = to.meta.title ? `${to.meta.title} - 栖川里物` : '栖川里物'
 })
 
 export default router

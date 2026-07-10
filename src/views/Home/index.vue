@@ -12,16 +12,16 @@ import HomeProduct from './components/HomeProduct.vue'
             <HomeCategory />
             <HomeBanner />
             <div class="hero-copy">
-                <p class="eyebrow">Vue 3 E-commerce Demo</p>
-                <h1>完整电商业务链路展示</h1>
+                <p class="eyebrow">ChicValley Curated Store</p>
+                <h1>面向都市生活方式的精选零售体验</h1>
                 <p class="summary">
-                    从商品浏览、SKU 规格联动、购物车到结算支付，全流程覆盖常见电商前台核心场景。
+                    以家居、餐厨、日用与灵感好物为核心，围绕浏览、选购、下单与会员复购构建一套完整的品质电商前台链路。
                 </p>
                 <div class="hero-tags">
-                    <span>Vue 3</span>
-                    <span>Pinia</span>
-                    <span>Axios</span>
-                    <span>Route Guard</span>
+                    <span>精选家居</span>
+                    <span>品质餐厨</span>
+                    <span>会员复购</span>
+                    <span>灵感专题</span>
                 </div>
             </div>
             <div class="hero-stats">
@@ -30,8 +30,8 @@ import HomeProduct from './components/HomeProduct.vue'
                     <span>核心业务模块</span>
                 </div>
                 <div class="stat-card">
-                    <strong>SPA</strong>
-                    <span>从浏览到支付回调</span>
+                    <strong>全链路</strong>
+                    <span>从浏览种草到支付回跳</span>
                 </div>
                 <div class="stat-card">
                     <strong>体验优化</strong>

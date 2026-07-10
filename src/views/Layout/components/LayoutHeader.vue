@@ -1,14 +1,15 @@
 <script setup>
 import { useCategoryStore } from '@/stores/categoryStore.js'
-const categoryStore = useCategoryStore()
 import HeaderCart from './HeaderCart.vue'
+
+const categoryStore = useCategoryStore()
 </script>
 
 <template>
-    <header class='app-header'>
+    <header class="app-header">
         <div class="container">
             <h1 class="logo">
-                <RouterLink to="/">小兔鲜</RouterLink>
+                <RouterLink to="/">栖川里物</RouterLink>
             </h1>
             <ul class="app-header-nav">
                 <li class="home">
@@ -20,16 +21,14 @@ import HeaderCart from './HeaderCart.vue'
             </ul>
             <div class="search">
                 <i class="iconfont icon-search"></i>
-                <input type="text" placeholder="搜一搜">
+                <input type="text" placeholder="搜索灵感好物">
             </div>
-            <!-- 头部购物车 -->
             <HeaderCart />
         </div>
     </header>
 </template>
 
-
-<style scoped lang='scss'>
+<style scoped lang="scss">
 .app-header {
     background: #fff;
 
@@ -39,14 +38,14 @@ import HeaderCart from './HeaderCart.vue'
     }
 
     .logo {
-        width: 200px;
+        width: 232px;
 
         a {
             display: block;
             height: 132px;
             width: 100%;
             text-indent: -9999px;
-            background: url('@/assets/images/logo.png') no-repeat center 18px / contain;
+            background: url('@/assets/images/logo-chicvalley.svg') no-repeat center 16px / 214px auto;
         }
     }
 

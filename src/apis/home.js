@@ -1,4 +1,4 @@
-import httpInstance from '@/utils/http'
+﻿import httpInstance from '@/utils/http'
 
 export function getHomeBannerAPI(params = {}) {
     const { distributionSite = '1' } = params
@@ -11,7 +11,7 @@ export function getHomeBannerAPI(params = {}) {
 }
 
 /**
- * @description: 获取新鲜好物
+ * @description: 获取首页上新商品
  * @param {*}
  * @return {*}
  */
@@ -22,7 +22,7 @@ export const findNewAPI = () => {
 }
 
 /**
- * @description: 获取人气推荐
+ * @description: 获取首页人气推荐
  * @param {*}
  * @return {*}
  */
@@ -33,7 +33,7 @@ export const findHotAPI = () => {
 }
 
 /**
- * @description: 获取所有商品模块
+ * @description: 获取首页商品模块
  * @param {*}
  * @return {*}
  */
